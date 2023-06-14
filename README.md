@@ -16,27 +16,47 @@ docker images
 docker run -d -p 8099:80 --name frontend frontend
 ```
 
-### Проверить, что контейнер запущен
+после запуска нового контейнера пройдите в терминале контейнера по адресу: **/etc/nginx/conf.d** и откройте **default.conf** редактором или просто внесите (**cat > default.conf**) (эта команда перепишет) следующее содержимое:
+```
+server {
+listen 80;
+server_name frontend;
+
+location / {
+root /usr/share/nginx/html;
+try_files $uri /index.html;
+}
+
+location /api/v1/ {
+proxy_pass http://host.docker.internal:8080;
+}
+}
+```
+
+Если работали командой cat, выйти - ctrl+z.
+
+
+#### Проверить, что контейнер запущен
 ```
 docker ps
 ```
 
-### Остановить контейнер
+#### Остановить контейнер
 ```
 docker stop frontend
 ```
 
-### Повторно запустить контейнер
+#### Повторно запустить контейнер
 ```
 docker start frontend
 ```
 
-### Удалить контейнер
+#### Удалить контейнер
 ```
 docker rm frontend
 ```
 
-### Удалить имадж
+#### Удалить имадж
 ```
 docker rmi frontend
 ```
