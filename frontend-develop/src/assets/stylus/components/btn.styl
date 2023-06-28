@@ -4,7 +4,7 @@
   justify-content center
   align-items center
   appearance none
-  background  eucalypt;
+  background  ui-cl-color-eucalypt;
   font-style  normal;
   font-weight  normal;
   font-size  15px;
@@ -23,36 +23,36 @@
   transition all .2s
 
   &.btn--white
-    background-color #fff
-    color eucalypt
+    background-color ui-cl-color-white-theme
+    color ui-cl-color-eucalypt
 
     &:hover
-      color #fff
+      color ui-cl-color-white-theme
 
   &.btn--red
-    background-color #fff
+    background-color ui-cl-color-white-theme
     color #E64F61
     border-color #E64F61 !important
 
     &:hover
-      color #fff
+      color ui-cl-color-white-theme
 
   &.btn--warning
     background-color #E74F61
-    color #fff
+    color ui-cl-color-white-theme
     border-color #E74F61 !important
 
   &.btn--fill
     background-color transparent
-    color eucalypt
-    border-color eucalypt !important
+    color ui-cl-color-eucalypt
+    border-color ui-cl-color-eucalypt !important
 
     &:hover
-      color #fff
+      color ui-cl-color-white-theme
 
   &.btn--dark
     background-color #383853
-    color #fff
+    color ui-cl-color-white-theme
 
     &:hover
       background-color #3C3C5B
@@ -65,14 +65,14 @@
       background-color #2E2E44
 
   &.btn--bordered
-    border 1px solid eucalypt
+    border 1px solid ui-cl-color-eucalypt
 
     &:hover
       border-color transparent !important
 
   &.btn--disable
-    background-color #BCBCC7
-    color #fff
+    background-color ui-cl-color-BCBCC7
+    color ui-cl-color-white-theme
     cursor not-allowed
 
     &:hover
@@ -96,7 +96,7 @@
     display block
     width 0
     height 0
-    border-radius 50%
+    border-radius border-half
     background-color #1D1C2A
     position absolute
     transform translate(-50%, -50%)

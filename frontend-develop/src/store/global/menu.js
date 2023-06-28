@@ -9,6 +9,7 @@ export default {
         exact: true,
         icon: 'profile',
         text: 'Моя страница',
+        textEng: 'My page'
       },
       {
         link: {
@@ -16,6 +17,7 @@ export default {
         },
         icon: 'friends',
         text: 'Друзья',
+        textEng: 'Friends'
       },
       {
         link: {
@@ -23,6 +25,7 @@ export default {
         },
         icon: 'im',
         text: 'Сообщения',
+        textEng: 'Messages'
       },
       {
         link: {
@@ -31,8 +34,40 @@ export default {
         exact: true,
         icon: 'news',
         text: 'Новости',
+        textEng: 'News'
       },
     ],
+    // admin: [
+    //   // Навигация статистика
+    //   {
+    //     link: {
+    //       name: 'AdminStatistics',
+    //     },
+    //     icon: 'statistics',
+    //     text: 'Статистика',
+    //   },
+    //   {
+    //     link: {
+    //       name: 'AdminUsers',
+    //     },
+    //     icon: 'users',
+    //     text: 'Люди',
+    //   },
+    //   {
+    //     link: {
+    //       name: 'AdminPosts',
+    //     },
+    //     icon: 'posts',
+    //     text: 'Публикации',
+    //   },
+    //   {
+    //     link: {
+    //       name: 'AdminComments',
+    //     },
+    //     icon: 'comments',
+    //     text: 'Комментарии',
+    //   },
+    // ],
     admin: [
       {
         link: {
@@ -43,28 +78,28 @@ export default {
       },
       {
         link: {
-          name: 'AdminUsers',
+          name: 'UsersPanel',
         },
         icon: 'users',
         text: 'Люди',
       },
       {
         link: {
-          name: 'AdminPosts',
+          name: 'PublicationPanel',
         },
         icon: 'posts',
         text: 'Публикации',
       },
       {
         link: {
-          name: 'AdminComments',
+          name: 'CommentsPanel',
         },
         icon: 'comments',
         text: 'Комментарии',
       },
       {
         link: {
-          name: 'AdminModerators',
+          name: 'AdministratorPanel',
         },
         icon: 'moderators',
         text: 'Администраторы и модераторы',

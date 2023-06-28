@@ -62,10 +62,10 @@ export default {
 .admin-login__link
   display block
   margin-left 30px
-  font-size 13px
+  font-size font-size-small
   color rgba(255, 255, 255, 0.5)
   transition all 0.2s
 
   &:hover
-    color #fff
+    color ui-cl-color-white-theme
 </style>

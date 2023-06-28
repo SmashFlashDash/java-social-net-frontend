@@ -11,15 +11,16 @@
       autocomplete="off"
     />
 
-    <label :for="id" class="form__label_stylus">Код</label>
+    <label :for="id" class="form__label_stylus">{{ translations.codeTitle }}</label>
 
-    <span class="form__error" v-if="v.$dirty && !v.required">Обязательное поле</span>
+    <span class="form__error" v-if="v.$dirty && !v.required">{{ translations.requiredField }}</span>
 
-    <span class="form__error" v-else-if="v.$dirty && !v.isCode">код не совпадает</span>
+    <span class="form__error" v-else-if="v.$dirty && !v.isCode">{{ translations.codeNoMatch }}</span>
   </div>
 </template>
 
 <script>
+import translations from '@/utils/lang.js';
 export default {
   name: 'CodeField',
   props: {
@@ -44,6 +45,14 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
+    },
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 };

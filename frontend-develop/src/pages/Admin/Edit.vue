@@ -38,7 +38,7 @@ export default {
   max-width 610px
   width 100%
   background #fff
-  box-shadow standart-boxshadow
+  box-shadow box-shadow-main
   padding 60px 85px 55px 40px
 
   .user-info-form__block + .user-info-form__block

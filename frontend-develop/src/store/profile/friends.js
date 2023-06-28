@@ -31,6 +31,15 @@ export default {
     friends: {},
     paginations: {},
     requestsCount: null,
+    friendSearch: null,
+    loadedCounts: {
+      REQUEST_FROM: 0,
+      REQUEST_TO: 0,
+      FRIEND: 0,
+      BLOCKED: 0,
+      SUBSCRIBED: 0,
+      WATCHING: 0,
+    },
   },
 
   getters: {
@@ -56,30 +65,51 @@ export default {
         };
       });
     },
+
     setRequestsCount: (s, payload) => {
       s.requestsCount = payload;
     },
 
-    setPaginations: (s, { number, totalPages, field }) => {
-      s.paginations[field] = { number, totalPages };
+    setFriendSearch: (s, payload) => {
+      s.friendSearch = payload;
+    },
+
+    resetFriendSearch(state) {
+      state.friendSearch = null;
+    },
+
+    setPaginations: (s, { totalElements, totalPages, field }) => {
+      s.paginations[field] = { totalElements, totalPages };
+    },
+
+    setLoadedCount: (s, { statusCode, count }) => {
+      s.loadedCounts = {
+        ...s.loadedCounts,
+        [statusCode]: count,
+      };
     },
   },
 
   actions: {
-    async apiFriends({ commit }, payload = '') {
-      const query = createQuery(payload);
+    async apiFriends({ commit, state }, { statusCode, loadMore = false }) {
+      const query = createQuery({ statusCode, size: loadMore ? state.loadedCounts[statusCode] + 6 : 3 });
       const { data } = await friends.get(query);
       const { content } = data;
-      const { number, totalPages } = data;
+      const { totalElements, totalPages } = data;
       commit('setResult', { id: 'friends', value: content || [] });
       commit('setFriends', content);
-      commit('setPaginations', { number, totalPages, field: payload.statusCode });
+      commit('setPaginations', { totalElements, totalPages, field: statusCode });
+      if (loadMore) {
+        commit('setLoadedCount', { statusCode, count: state.loadedCounts[statusCode] + 3 });
+      }
     },
 
     async apiDeleteFriends({ dispatch }, id) {
       await friends.delete(id);
       dispatchSetAlert(dispatch, 'Пользователь удален из друзей');
-      dispatch('apiFriends');
+      dispatch('global/search/searchUsers', 'global/search/getLastSearchUsersRequest', {
+        root: true,
+      });
     },
 
     async apiAddFriends({ dispatch, getters, rootGetters }, { id, isApprove = false }) {
@@ -137,6 +167,11 @@ export default {
     async apiRequestsCount({ commit }) {
       const { data } = await friends.friendRequestsCount();
       commit('setRequestsCount', data);
+    },
+
+    async apiFriendSearch({ commit }, { firstName, statusCode }) {
+      const { data } = await friends.friendSearch(firstName, statusCode);
+       commit('setFriendSearch', data);
     },
   },
 };

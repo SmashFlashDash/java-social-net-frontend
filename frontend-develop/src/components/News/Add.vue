@@ -1,6 +1,6 @@
 <template>
   <div class="news-add" :class="{ open: isOpen }">
-    <div class="news-add__mask" v-if="!isOpen">
+    <div class="news-add__mask" v-if="!isOpen" @click.prevent="openForm">
       <template v-if="getInfo">
         <div class="news-add__pic imgDiv" v-if="user">
           <img
@@ -11,12 +11,12 @@
           />
 
           <div class="avatar" v-else>
-            {{ getInfo.firstName[0] + ' ' + getInfo.lastName[0] }}
+            <unknow-user />
           </div>
         </div>
       </template>
 
-      <span class="news-add__placeholder">Поделитесь новостью...</span>
+      <span class="news-add__placeholder">{{ translations.newsAddPlaceholder }}</span>
 
       <div class="news-add__block add" @click.prevent="openForm">
         <add-icon />
@@ -31,10 +31,12 @@
 import { mapGetters } from 'vuex';
 import AddIcon from '@/Icons/AddIcon.vue';
 import AddForm from '@/components/News/AddForm';
+import UnknowUser from '../../Icons/UnknowUser.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'NewsAdd',
-  components: { AddForm, AddIcon },
+  components: { AddForm, AddIcon, UnknowUser },
   props: {
     user: Boolean,
   },
@@ -43,6 +45,14 @@ export default {
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
   methods: {
     openForm() {
@@ -54,6 +64,19 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
+@media (min-width: 320px) and (max-width: 768px)
+  .news-add
+    &__mask
+      padding 10px 20px
+      height unset
+    &__text-title
+      font-size font-size-updefault
+      padding-bottom 10px
+</style>
 
 <style lang="stylus" scoped>
 .avatar

@@ -8,10 +8,10 @@
 @import '../assets/stylus/base/vars.styl'
 
 .empty-layout
-  background-color eucalypt
+  background-color ui-cl-color-eucalypt
   display flex
   align-items center
   justify-content center
   height 100%
-  color #fff
+  color ui-cl-color-white-theme
 </style>

@@ -1,10 +1,15 @@
 .user-status
-  font-size 13px
+  background-color ui-cl-color-white-theme
+  box-shadow box-shadow-main
+  font-size font-size-super-medium-small
   line-height 19px
-  color #9EA4AD
-  white-space nowrap
+  padding 3px 5px
+  border-radius border-super-small
+  color #000
   display flex
   align-items center
+  
+  justify-content center
   word-break break-all
 
   &:before
@@ -12,12 +17,12 @@
     display none
     width 5px
     height 5px
-    border-radius 50%
-    background-color eucalypt
+    border-radius border-half
+    background-color ui-cl-color-eucalypt
     margin-right 5px
   
   &.online
-    color eucalypt
+    color ui-cl-color-eucalypt
 
     &:before
       display block   
@@ -27,7 +32,7 @@
 
     &:before
       display block
-      background-color #C5C5C5
+      background-color ui-cl-color-c5c5c5
     
   
 

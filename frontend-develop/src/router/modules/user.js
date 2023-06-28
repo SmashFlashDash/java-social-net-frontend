@@ -8,6 +8,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Новости',
+      titleEng: 'News',
       requiresAuth: true,
     },
   },
@@ -17,6 +18,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Сообщения',
+      titleEng: 'Messages',
       requiresAuth: true,
     },
     component: () => import('@/pages/User/Im.vue'),
@@ -28,6 +30,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Сообщения',
+      titleEng: 'Messages',
       requiresAuth: true,
     },
     component: () => import('@/pages/User/Im.vue'),
@@ -38,6 +41,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Моя Страница',
+      titleEng: 'My page',
       requiresAuth: true,
     },
     component: () => import('@/pages/User/Profile.vue'),
@@ -48,6 +52,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Профиль пользователя',
+      titleEng: 'User profile',
       requiresAuth: true,
     },
     component: () => import('@/pages/User/ProfileId.vue'),
@@ -58,6 +63,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Настройки',
+      titleEng: 'Settings',
       requiresAuth: true,
     },
     component: () => import('@/pages/User/Settings.vue'),
@@ -77,6 +83,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Поиск друзей',
+      titleEng: 'Search for friends',
     },
     component: () => import('@/pages/User/FriendsFind.vue'),
   },
@@ -86,6 +93,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Поиск',
+      titleEng: 'Search',
     },
     component: () => import('@/pages/User/Search.vue'),
   },
@@ -95,6 +103,7 @@ export default [
     meta: {
       layout: 'main',
       title: 'Уведомления',
+      titleEng: 'Notifications',
     },
     component: () => import('@/pages/User/Push.vue'),
   },

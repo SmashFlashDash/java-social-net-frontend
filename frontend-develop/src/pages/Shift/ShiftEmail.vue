@@ -117,6 +117,7 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
 .shift-email
   display flex
   justify-content center
@@ -137,5 +138,5 @@ export default {
   height 30px
   padding 1px
   background-color white
-  color #21a45d
+  color ui-cl-color-eucalypt
 </style>

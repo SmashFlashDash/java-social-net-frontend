@@ -3,13 +3,14 @@
 </template>
 
 <style lang="stylus">
+@import '../assets/stylus/base/vars.styl'
 .loader
-  color #2C8F59
+  color ui-cl-color-sea-green
   font-size 20px
   margin 100px auto
   width 1em
   height 1em
-  border-radius 50%
+  border-radius border-half
   position relative
   text-indent -9999em
   animation load4 1.3s infinite linear

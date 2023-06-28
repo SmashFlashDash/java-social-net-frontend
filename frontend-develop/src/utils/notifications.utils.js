@@ -1,11 +1,11 @@
 export function getRouteByNotification(notification) {
-  switch (notification.notification_type) {
+  switch (notification.notificationType) {
     case 'MESSAGE':
-      return { name: 'Im', params: { id: notification.author.id } };
+      return { name: 'Im', params: { id: notification } };
     default:
       return {
         name: 'ProfileId',
-        params: { id: notification.author.id },
+        params: { id: notification },
       };
   }
 }

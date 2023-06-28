@@ -7,10 +7,11 @@
           :blocked="getUsersInfo.isBlocked"
           :friend="getUsersInfo.isFriend"
           :online="getUsersInfo.isOnline"
+          :me="myProfile"
         />
       </div>
 
-      <div class="profile__news">
+      <div class="profile__news" id="mypublications">
         <div class="profile__tabs">
           <span class="profile__tab active">
             Публикации {{ getUsersInfo.firstName }} ({{ getWallPagination.totalElements }})
@@ -20,7 +21,7 @@
         <div v-if="getWall && getWall.length > 0" class="profile__news-list">
           <error-block v-if="!loading && error" :message="errorMessage" />
 
-          <news-block v-for="news in getWall" :key="news.id" :info="news" />
+          <news-block v-for="news in filteredWall.posted" :key="news.id" :info="news" />
 
           <div class="spinner-wrapper" v-if="loading">
             <spinner />
@@ -53,6 +54,18 @@ export default {
   computed: {
     ...mapGetters('users/info', ['getUsersInfo', 'getWall', 'getWallPagination']),
     ...mapState('global/status', ['loading', 'error', 'errorMessage']),
+    ...mapGetters('profile/info', ['getInfo']),
+
+    myProfile() {
+      return this.getInfo?.id === this.getUsersInfo?.id;
+    },
+
+    filteredWall() {
+      const wall = this.getWall;
+      const posted = wall.filter(item => item.type === 'POSTED');
+      const queued = wall.filter(item => item.type === 'QUEUED');
+      return { posted, queued };
+    },
   },
 
   mounted() {

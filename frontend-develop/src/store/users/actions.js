@@ -3,9 +3,8 @@ import friends from '@/requests/friends';
 export default {
   namespaced: true,
   actions: {
-    async apiBlockUser({ dispatch }, id) {
-      await friends.changeBlockUser(id);
-
+    async apiBlockedUser({ dispatch }, id) {
+      const response = await friends.blockedUser(id);
       dispatch(
         'global/alert/setAlert',
         { status: 'success', text: 'Пользователь заблокирован' },
@@ -15,10 +14,11 @@ export default {
       dispatch('global/search/searchUsers', 'global/search/getLastSearchUsersRequest', {
         root: true,
       });
+      console.log('TCL: apiBlockedUser -> response', response);
     },
 
     async apiUnblockUser({ dispatch }, id) {
-      const response = await friends.changeBlockUser(id);
+      const response = await friends.unblockUser(id);
       dispatch(
         'global/alert/setAlert',
         { status: 'success', text: 'Пользователь разблокирован' },

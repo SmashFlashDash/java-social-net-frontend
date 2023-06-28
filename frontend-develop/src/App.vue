@@ -1,13 +1,17 @@
 <template>
   <div id="app">
-    <component :is="layout" v-if="$route.meta.layout">
+    <component :is="layout" v-if="$route.meta.layout && !isDeleted">
       <router-view />
     </component>
+    <div class="deleted-account" v-else-if="isDeleted">
+      <delete-account :info="info" />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
+import DeleteAccount from './layouts/DeleteAccount.vue';
 
 export default {
   name: 'App',
@@ -15,14 +19,21 @@ export default {
     FormLayout: () => import('@/layouts/FormLayout'),
     MainLayout: () => import('@/layouts/MainLayout'),
     EmptyLayout: () => import('@/layouts/EmptyLayout'),
+    DeleteAccount
   },
   computed: {
     ...mapGetters('global/alert', ['getState']),
+    ...mapState('profile/info', ['info']),
+
     alert() {
       return this.$store.state.global.alert;
     },
     layout() {
       return this.$route.meta.layout + '-layout';
+    },
+
+    isDeleted() {
+      return this.info && this.info.isDeleted;
     },
   },
 
@@ -56,18 +67,37 @@ export default {
       return;
     },
   },
+
+  async mounted() {
+    if (!this.getInfo) {
+      await this.apiInfo();
+    }
+  },
+
+  methods: {
+    ...mapGetters('profile/info', ['getInfo']),
+  }
+
 };
 </script>
 <style lang="stylus">
 
-@import './assets/stylus/main.styl'
+@import './assets/stylus/main.styl';
+@import './assets/stylus/base/vars.styl'
 
 .v-snack__wrapper
   &.success
-    background-coloreucalypt
+    background-color ui-cl-color-eucalypt
 
   &.error
-    background-colorwild-watermelon
+    background-color ui-cl-color-wild-watermelon
+
+.deleted-account
+  display flex
+  align-items center
+  justify-content center
+  width 100%
+  height 100vh
 </style>
 
 <style lang="css">

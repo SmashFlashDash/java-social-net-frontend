@@ -4,43 +4,67 @@
 
     <div class="push__wrap" :class="{ open: isOpen }" ref="wrap">
       <div class="push__list" ref="list">
-        <div class="push__item" v-for="info in getNotifications" :key="info.id">
-          <div class="main-layout__user-pic" style="background-color: #8bc49e">
-            <div class="push__img" v-if="info.author.photo">
-              <img :src="info.author.photo" :alt="info.author.firstName" />
+        <div v-if="visibleNotifications.length > 0">
+          <div class="push__item" v-for="info in visibleNotifications" :key="info.data.id">
+            <div class="main-layout__user-pic" style="background-color: #8bc49e">
+              <div class="push__img" v-if="info?.data?.author?.photo">
+                <img :src="info?.data?.author?.photo" :alt="info?.data?.author?.firstName" />
+              </div>
+              <div v-else>
+                {{ info?.data?.author?.firstName[0] + ' ' + info?.data?.author?.lastName[0] }}
+              </div>
             </div>
-
-            <div v-else>
-              {{ info.author.firstName[0] + ' ' + info.author.lastName[0] }}
-            </div>
+            <p class="push__content">
+              <router-link class="push__content-name" :to="getRouteByNotification(info?.data?.authorId)">
+                <span class="push__content-preview">
+                  {{ info?.data?.author?.firstName + ' ' + info?.data?.author?.lastName }}
+                </span>
+                {{ getNotificationsTextType(info?.data?.notificationType) }}
+                «{{ info?.data?.content }}»
+              </router-link>
+              <span class="push__time">{{ info.data.sentTime | moment('from') }}</span>
+            </p>
           </div>
-
-          <p class="push__content">
-            <router-link class="push__content-name" :to="getRouteByNotification(info)">
-              <span class="push__content-preview">{{ info.content }}</span>
-              {{ getNotificationsTextType(info.notificationType) }}
-              «{{ info.author.firstName + ' ' + info.author.lastName }}»
-            </router-link>
-          </p>
-
-          <span class="push__time">{{ info.sentTime | moment('from') }}</span>
+        </div>
+        <div v-else>
+          <div>
+            <p class="no__notifications">{{ translations.notNotification }}</p>
+          </div>
         </div>
       </div>
-
-      <router-link class="push__btn" :to="{ name: 'Push' }" v-if="getNotificationsLength > 0">
-        Показать ({{ getNotificationsLength }})
-      </router-link>
+      <button
+        class="push__btn"
+        @click.prevent="showMore"
+        v-if="showButtonMore"
+      >
+        {{ translations.showmoreNotification }}
+      </button>
+      <button
+        class="push__btn"
+        @click.prevent="readedButton"
+        v-if="showButtonReaded"
+      >
+        {{ translations.readedNotification }}
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import { getRouteByNotification } from '@/utils/notifications.utils.js';
+import translations from '@/utils/lang.js';
 export default {
   name: 'Push',
   props: {
     isOpen: Boolean,
+  },
+  data() {
+    return {
+      visibleNotifications: [],
+      showCount: 3,
+      isClickedButton: false
+    }
   },
   computed: {
     ...mapGetters('profile/notifications', [
@@ -48,20 +72,65 @@ export default {
       'getNotificationsLength',
       'getNotificationsTextType',
     ]),
+    shouldUpdateVisibleNotifications() {
+      return this.getNotifications.length === 0;
+    },
+
+    showButtonMore() {
+      if (this.visibleNotifications.length !== this.getNotifications.length) {
+        return true
+      } else if (this.getNotifications.length === 0) {
+        return false
+      } else {
+        return false
+      }
+    },
+
+    showButtonReaded() {
+      if (this.getNotifications.length === 0) {
+        return false
+      } else if (this.getNotifications.length === this.visibleNotifications.length) {
+        return true
+      } else {
+        return false
+      }
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
 
   watch: {
     isOpen(val) {
       if (val) {
+      this.fetchNotifications()
+        .then(() => {
+          this.loadVisibleNotifications();
+      });
+      if (this.getNotifications.length === 0) {
+        this.fetchNotifications()
+      }
         this.$refs.list.scrollTop = 0;
-        this.fetchNotifications();
       } else {
         this.fetchNotificationsLength();
+        this.visibleNotifications = [];
       }
     },
+    shouldUpdateVisibleNotifications(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.visibleNotifications = [...this.getNotifications];
+      }
+    }
   },
 
   mounted() {
+
     if (this.getNotificationsLength === 0) {
       this.fetchNotificationsLength();
     }
@@ -75,24 +144,47 @@ export default {
         window.innerHeight - this.$refs.wrap.getBoundingClientRect().top
       }px`;
     }
-    window.onscroll = () => {
-      this.closePush();
-    };
+    // window.onscroll = () => {
+    //   this.closePush();
+    // };
+
   },
 
   methods: {
-    ...mapActions('profile/notifications', ['fetchNotifications', 'fetchNotificationsLength']),
+    ...mapActions('profile/notifications', ['fetchNotifications', 'fetchNotificationsLength', 'readedNotifications']),
+    ...mapMutations('profile/notifications', ['incrementOffset']),
     getRouteByNotification,
+
     closePush() {
       if (!this.isOpen) return;
       this.$emit('close-push');
     },
+
+    readedButton() {
+      return this.readedNotifications();
+    },
+
+    loadVisibleNotifications() {
+      this.visibleNotifications = this.getNotifications.slice(0, this.showCount);
+    },
+
+    showMore() {
+      const startIndex = this.visibleNotifications.length;
+      const newVisibleNotifications = this.getNotifications.slice(startIndex, startIndex + this.showCount);
+      this.visibleNotifications = [...this.visibleNotifications, ...newVisibleNotifications];
+    }
   },
 };
 </script>
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.no__notifications
+  color ui-cl-color-full-black
+  padding 15px 0
+  text-align center
+  cursor default
 
 .push
   .push__overlay
@@ -112,75 +204,74 @@ export default {
   cursor default
 
 .push__wrap
-  position fixed
-  background #FFf
-  box-shadow 0px 2px 60px rgba(0, 0, 0, 0.1)
-  right 50px
-  top header-height
+  position absolute
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
+  right 0px
+  top 65px
   width 100%
-  max-width 710px
+  border-radius border-small
+  max-width 470px
   max-height 675px
+  min-width 400px
   z-index 100
   opacity 0
   visibility hidden
-  transform translateY(-20px)
   transition all 0.2s
   overflow-y auto
 
   &.open
-    transform translateY(0)
     opacity 1
     visibility visible
 
-  &:before, &:after
-    content ''
-    display block
-    width 19px
-    height 38px
-    position absolute
-    top -16px
-
-  &:before
-    background-image linear-gradient(115deg, transparent 50%, #fff 50%)
-    right 223px
-
-  &:after
-    background-image linear-gradient(245deg, transparent 50%, #fff 50%)
-    right 205px
-
 .push__list
   overflow-y auto
+  padding 10px
   max-height 450px
 
 .push__item
   display flex
   align-items center
-  padding 35px 0
-  margin 0 40px
-  max-height 70px
+  padding 15px 5px
+  overflow hidden
+  transition all .2s ease-in-out
+
+  @media (any-hover: hover)
+    &:hover
+      background-color ui-cl-color-white-bright
+      border-radius border-super-small
+      &+&
+        border-top 0
 
   &+&
-    border-top 1px solid #E7E7E7
+    border-top 1px solid ui-cl-color-white-bright-second
 
 .push__btn
   display flex
+  width 100%
+  background transparent
   align-items center
   justify-content center
-  font-weight bold
-  font-size 15px
+  font-weight font-weight-bold
+  font-size font-size-downdefault
   letter-spacing 0.01em
-  color eucalypt
-  border-top 1px solid #E7E7E7
+  color ui-cl-color-eucalypt
+  border-top 1px solid ui-cl-color-white-bright-second
   height 55px
+  transition all .2s ease-in-out
+  @media (any-hover: hover)
+    &:hover
+      background-color ui-cl-color-white-bright
+
 
 .main-layout__user-pic
   width 50px
   height 50px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 15px
   flex none
-  background-color #8bc49e
+  background-color ui-cl-color-light-eucalypt
 
   div
     display flex

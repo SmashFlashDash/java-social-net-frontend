@@ -1,35 +1,61 @@
 <template>
   <div class="settings-security">
     <div class="settings-security__block">
-      <h3 class="settings-security__title">E-mail:</h3>
+      <div class="settings-security__mail">
+        <h3 class="settings-security__title">E-mail:</h3>
 
-      <span class="settings-security__value">{{ getInfo.email }}</span>
+        <input
+          class="settings-security__value"
+          v-model="changeEmail"
+          autocomplete="off"
+        />
 
-      <button-hover @click.native="openModal('email')">Изменить</button-hover>
-    </div>
+        <button
+          class="settings-security__btn"
+          @click.prevent="openModal('email')"
+        >
+          {{ translations.settingBtnChange }}
+        </button>
+      </div>
 
-    <div class="settings-security__block">
-      <h3 class="settings-security__title">Пароль:</h3>
-
-      <span class="settings-security__value">********</span>
-
-      <button-hover @click.native="openModal('password')">Изменить</button-hover>
+      <h3 class="settings-security__title">{{ translations.settingPasswordLabel }}</h3>
+      <input
+        class="settings-security__value not-first"
+        type="password"
+        v-model="password"
+        :placeholder="translations.settingPasswordPlaceholder"
+        autocomplete="new-password"
+      />
+      <input
+        class="settings-security__value"
+        type="password"
+        v-model="passwordTwo"
+        :placeholder="translations.settingPasswordPlaceholder2"
+        autocomplete="new-password"
+      />
+      <button
+        class="settings-security__btn"
+        @click.prevent="openModal('password')"
+      >
+        {{ translations.settingBtnChange }}
+      </button>
     </div>
 
     <modal v-model="modalShow">
       <p v-if="modalText">{{ modalText }}</p>
 
       <template slot="actions">
-        <button-hover @click.native="closeModal">Ок</button-hover>
+        <button-hover @click.native="closeModal">{{ translations.yes }}</button-hover>
       </template>
     </modal>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 import Modal from '@/components/Modal';
-import { mapGetters } from 'vuex';
+import auth from '@/requests/auth';
+import translations from '@/utils/lang.js';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'SettingsSecurity',
@@ -38,30 +64,59 @@ export default {
   data: () => ({
     modalShow: false,
     modalText: '',
+    changeEmail: '',
+    password: '',
+    passwordTwo: '',
   }),
 
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+  },
+
+  mounted() {
+    setTimeout(() => {
+      this.changeEmail = this.getInfo?.email;
+      this.password = '';
+      this.passwordTwo = '';
+    }, 300);
   },
 
   methods: {
+    ...mapActions('auth/api', ['logout']),
+
     closeModal() {
       this.modalShow = false;
     },
 
-    openModal(id) {
+    async openModal(id) {
       if (id === 'email') {
-        axios.post('auth/change-email-link', { email: this.getInfo.email }).then(() => {
-          this.modalText = 'На ваш E-mail было отправлено письмо со ссылкой для смены почты.';
+        await auth.requestChangeEmailLink({ email: this.changeEmail }).then(() => {
+          this.modalText = `${this.translations.settingModalEmailChange} ${this.changeEmail}`;
           this.modalShow = true;
+          setTimeout(() => {
+            this.logout().finally(() => {
+              this.$router.push('/login');
+            });
+          }, 3000);
         });
       }
 
       if (id === 'password') {
-        axios.post('auth/change-password-link', { email: this.getInfo.email }).then(() => {
-          this.modalText = 'На ваш E-mail было отправлено письмо со ссылкой для смены пароля.';
-          this.modalShow = true;
-        });
+        if (this.password === this.passwordTwo) {
+          await auth.requestChangePasswordLink({ password: this.passwordTwo }).then(() => {
+            this.modalText = `${this.translations.settingModalPasswordChange}`;
+            this.modalShow = true;
+          });
+        }
       }
     },
   },
@@ -71,24 +126,57 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+
 .settings-security__block
-  background #fff
-  box-shadow standart-boxshadow
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
   display flex
-  align-items center
-  height 95px
-  padding 0 33px 0 50px
-  font-size 15px
+  flex-direction column
+  width 100%
+  padding 30px
+  font-size font-size-downdefault
+  border-radius border-big-radius
 
   &+&
     margin-top 20px
 
+.settings-security__mail
+  margin-bottom 30px
+
+.settings-security__btn
+  display block
+  min-width 180px
+  max-width 180px
+  color ui-cl-color-eucalypt
+  border-radius border-small
+  text-align center
+  background ui-cl-color-white-theme
+  border 1px solid ui-cl-color-eucalypt
+  font-size font-size-small-medium
+  padding 10px
+  @media (any-hover: hover)
+    &:hover
+      background ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
+
 .settings-security__title
-  color #5F5E7A
-  width 100px
+  color ui-cl-color-full-black
+  margin-bottom 15px
+  font-family 'Exo', Arial, sans-serif
+  font-size 24px
+  font-weight font-weight-bold
+
+.form__input_stylus
+  color ui-cl-color-full-black
 
 .settings-security__value
-  color #414141
   display block
-  margin-right auto
+  width 100%
+  color ui-cl-color-767676
+  border-radius border-small
+  background ui-cl-color-white-theme
+  border 1px solid ui-cl-color-ababab
+  font-size font-size-small-medium
+  padding 10px 15px
+  margin-bottom 15px
 </style>

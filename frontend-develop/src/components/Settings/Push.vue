@@ -6,7 +6,9 @@
           <simple-svg :filepath="`/static/img/settings/push/${item.icon}.svg`" />
         </div>
 
-        <h2 class="settings-push__name">{{ item.name }}</h2>
+        <h2 class="settings-push__name">
+          {{ currentTranslations === 'Русский' ? item.name : item.nameEng }}
+        </h2>
 
         <div class="settings-push__check">
           <input
@@ -31,11 +33,16 @@ export default {
 
   computed: {
     ...mapGetters('profile/account', ['getNotificationsSettings']),
+
+    currentTranslations() {
+      return this.$store.state.auth.languages.language.name;
+    },
   },
 
   mounted() {
     this.apiNotificationsSettings();
   },
+
 
   methods: {
     ...mapActions('profile/account', ['changeNotifications']),
@@ -44,7 +51,7 @@ export default {
     onChecked(item) {
       console.log(item);
       this.changeNotifications({
-        notification_type: item.type,
+        notificationType: item.type,
         enable: !item.enable,
       });
     },
@@ -55,10 +62,17 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+.settings__wrap
+  .inner-page__main
+    max-width 100%
+
+
 .settings-push
-  background #fff
-  box-shadow standart-boxshadow
-  padding 10px 40px
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
+  padding 30px
+  border-radius border-big-radius
+  width 100%
 
 .settings-push__item
   display flex
@@ -66,22 +80,22 @@ export default {
   padding 25px 0
 
   &+&
-    border-top 1px solid #E6E6E6
+    border-top 1px solid ui-cl-color-e6e6e6
 
 .settings-push__icon
-  margin-right 30px
+  margin-right 15px
   width 23px
   height 23px
 
 .settings-push__name
   margin-right auto
-  font-size 15px
-  font-family Open Sans
-  color #5F5E7A
+  font-size font-size-small
+  font-weight font-weight-regular
+  font-family 'Open Sans'
+  color ui-cl-color-comet
 
 .settings-push__check
   width 43px
-  height 22px
 
 .settings-push__check-input
   display none
@@ -89,11 +103,11 @@ export default {
   &:checked
     & + .settings-push__check-label
       &:before
-        background-color eucalypt
+        background-color ui-cl-color-eucalypt
         left 50%
 
       &:after
-        background-color #A5CFB1
+        background-color ui-cl-color-a5cfb1
 
 .settings-push__check-label
   display block
@@ -106,8 +120,8 @@ export default {
     display block
     width 22px
     height 22px
-    border-radius 50%
-    background-color #BCBCC7
+    border-radius border-half
+    background-color ui-cl-color-BCBCC7
     position absolute
     left 0
     top -11px
@@ -117,7 +131,7 @@ export default {
   &:after
     content ''
     display block
-    background-color #D6D6E2
+    background-color ui-cl-color-d6d6e2
     border-radius 13px
     width 43px
     height 13px

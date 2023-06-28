@@ -2,7 +2,11 @@ import axios from 'axios';
 
 export default {
   get() {
-    return axios.get('notifications');
+    return axios.get(`notifications`);
+  },
+
+  readed() {
+    return axios.put('/notifications/readed');
   },
 
   getLength() {

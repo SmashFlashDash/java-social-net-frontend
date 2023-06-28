@@ -8,12 +8,12 @@ export default [
     component: () => import('@/pages/Admin/Login.vue'),
   },
   {
-    path: '/admin/statistics',
+    path: '/admin/panel/statistics',
     name: 'AdminStatistics',
     meta: {
       layout: 'main',
     },
-    component: () => import('@/pages/Admin/Statistics.vue'),
+    component: () => import('@/pages/Admin/Main.vue'),
   },
   {
     path: '/admin/users',
@@ -40,19 +40,43 @@ export default [
     component: () => import('@/pages/Admin/Posts.vue'),
   },
   {
-    path: '/admin/moderators',
-    name: 'AdminModerators',
+    path: '/admin/likes',
+    name: 'AdminLikes',
     meta: {
       layout: 'main',
     },
-    component: () => import('@/pages/Admin/Moderators.vue'),
+    component: () => import('@/pages/Admin/Likes.vue'),
   },
   {
-    path: '/admin/moderators/edit',
-    name: 'AdminEdit',
+    path: '/admin/panel/users',
+    name: 'UsersPanel',
     meta: {
       layout: 'main',
     },
-    component: () => import('@/pages/Admin/Edit.vue'),
+    component: () => import('@/pages/Admin/AdminPanel/Users.vue'),
+  },
+  {
+    path: '/admin/panel/publications',
+    name: 'PublicationPanel',
+    meta: {
+      layout: 'main',
+    },
+    component: () => import('@/pages/Admin/AdminPanel/Publications.vue'),
+  },
+  {
+    path: '/admin/panel/comments',
+    name: 'CommentsPanel',
+    meta: {
+      layout: 'main',
+    },
+    component: () => import('@/pages/Admin/AdminPanel/Comments.vue'),
+  },
+  {
+    path: '/admin/panel/administrators',
+    name: 'AdministratorPanel',
+    meta: {
+      layout: 'main',
+    },
+    component: () => import('@/pages/Admin/AdminPanel/Administrators.vue'),
   },
 ];

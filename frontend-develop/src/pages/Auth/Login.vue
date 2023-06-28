@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <h2 class="login__title form__title">Войдите в аккаунт</h2>
+    <h2 class="login__title form__title">{{ translations.loginAuth }}</h2>
 
     <form class="login__form" @submit.prevent="submitHandler">
       <email-field id="login-email" v-model="email" :v="$v.email" />
@@ -8,8 +8,8 @@
       <password-field id="login-password" v-model="password" :v="$v.password" />
 
       <div class="login__action">
-        <button-hover type="submit" tag="button" variant="white"> Войти </button-hover>
-        <router-link class="login__link" :to="{ name: 'Forgot' }"> Забыли пароль? </router-link>
+        <button class="form-layout__btn btn__login" :disabled="isButtonDisabled" type="submit">{{ translations.loginAuthBtn }}</button>
+        <router-link class="login__link" :to="{ name: 'Forgot' }"> {{ translations.loginAuthForgot }} </router-link>
       </div>
     </form>
   </div>
@@ -19,6 +19,7 @@
 import { mapActions } from 'vuex';
 import { required, email, minLength } from 'vuelidate/lib/validators';
 import PasswordField from '@/components/FormElements/PasswordField';
+import translations from '@/utils/lang.js';
 import EmailField from '@/components/FormElements/EmailField';
 
 export default {
@@ -36,6 +37,18 @@ export default {
   computed: {
     redirectUrl() {
       return this.$route.query.redirect || 'News';
+    },
+    isButtonDisabled() {
+      return !this.email || !this.password;
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 
@@ -66,28 +79,30 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../../assets/stylus/base/vars.styl'
-
 .login
-  height 100%
   display flex
   flex-direction column
   justify-content center
 
 .login__title
+  color ui-cl-color-white-theme
+  font-weight font-weight-medium
   margin-bottom 50px
 
 .login__action
   display flex
   align-items center
-  margin-top 50px
+  margin-top 30px
+  .form-layout__btn
+    min-width 150px
 
 .login__link
-  font-size 13px
+  font-size font-size-small
   color rgba(255, 255, 255, 0.5)
   margin-left 30px
   white-space nowrap
   transition all 0.2s
 
   &:hover
-    color #fff
+    color ui-cl-color-white-theme
 </style>

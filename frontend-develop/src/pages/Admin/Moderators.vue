@@ -49,8 +49,8 @@ export default {
     position relative
 
 .admin-moderators__link
-  font-size 13px
-  color #21A45D
+  font-size font-size-small
+  color ui-cl-color-eucalypt
   position absolute
   right 15px
   top -40px

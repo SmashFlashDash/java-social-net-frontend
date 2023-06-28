@@ -1,13 +1,16 @@
 .news-add
-  background #FFFFFF
-  box-shadow standart-boxshadow
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
   cursor pointer
   border-radius 3%
   &.open
     cursor default
 
+.news-add-form
+  position relative
+
 .news-add__mask
-  padding 0 25px 0 40px
+  padding 20px
   height 60px
   display flex
   align-items center
@@ -15,13 +18,13 @@
 .news-add__pic
   width 35px
   height 35px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 15px
 
 .news-add__placeholder
   color #B0B0BC
-  font-size 13px
+  font-size font-size-small
   display block
   margin-right auto
 
@@ -52,13 +55,13 @@
   display flex
   flex-direction column
   padding-right 50px
-  border-right 1px solid #E6E6E6
+  border-right 1px solid ui-cl-color-e6e6e6
 
 .news-add__text-title
   font-family font-exo
-  font-weight bold
+  font-weight font-weight-bold
   font-size 24px
-  color steel-gray
+  color ui-cl-color-steel-gray
   margin-bottom 20px
   display flex
   width 100%
@@ -67,9 +70,9 @@
     color #CFCFCF
 
 .news-add__text-main
-  font-size 15px
+  font-size font-size-downdefault
   line-height 26px
-  color #747487
+  color ui-cl-color-storm-gray
   display block
   margin-bottom 10px
   width 100%
@@ -77,17 +80,17 @@
   max-height 210px
   overflow-y scroll
   strong
-    font-weight bold
+    font-weight font-weight-bold
   em
     font-style italic
   a
-    color eucalypt
-    font-weight 600
+    color ui-cl-color-eucalypt
+    font-weight font-weight-bold
     cursor pointer
 
 .news-add__actions
   padding-top 20px
-  border-top 1px solid #E6E6E6
+  border-top 1px solid ui-cl-color-e6e6e6
 
 .news-add__actions-buttons
   display flex
@@ -99,16 +102,16 @@
     align-items center
     justify-content center
     background-color #F5F7FB
-    color #747487
+    color ui-cl-color-storm-gray
     cursor pointer
     transition all 0.2s
     &.is-active
-      background-color #747487
+      background-color ui-cl-color-storm-gray
       color #F5F7FB
       .simple-svg
         fill #F5F7FB
     &.bold
-      font-weight bold
+      font-weight font-weight-bold
     &.italic
       font-style italic
     &.underline
@@ -118,7 +121,7 @@
       height 12px
       margin-top -12px
     .simple-svg
-      fill #747487
+      fill ui-cl-color-storm-gray
   button + button
     margin-left 10px
 
@@ -139,7 +142,7 @@
     visibility visible
   form
     display flex
-    border 1px solid #e6e6e6
+    border 1px solid ui-cl-color-e6e6e6
 
 .news-add__settings
   max-width 172px
@@ -171,17 +174,17 @@
     border none
     width 100%
   .vc-text-weekends-900
-    color wild-watermelon
+    color ui-cl-color-wild-watermelon
     &.vc-text-gray-400
-      color rgba(wild-watermelon, 0.5)
+      color rgba(ui-cl-color-wild-watermelon, 0.5)
 
 .news-add__modal-selects
   display flex
   justify-content space-between
   padding-top 40px
-  border-top 1px solid #E6E6E6
+  border-top 1px solid ui-cl-color-e6e6e6
 .news-add__modal-select
-  font-size 13px
+  font-size font-size-small
   padding 0 10px
   &.day
     width 55px
