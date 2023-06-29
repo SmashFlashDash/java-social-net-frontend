@@ -29,7 +29,6 @@ axios.interceptors.response.use(null, (error) => {
     }
     if (error.response.status === 401) {
       localStorage.removeItem('user-token');
-      document.cookie = 'jwt=';
       store.commit('auth/api/setToken', null);
       window.location.replace('/login');
     }

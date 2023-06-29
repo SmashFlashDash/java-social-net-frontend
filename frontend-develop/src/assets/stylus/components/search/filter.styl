@@ -1,7 +1,7 @@
 .search-filter 
   display flex 
-  align-items flex-end 
-  padding 25px 0 
+  align-items flex-end
+
   
   @media (max-width breakpoint-xl) 
    flex-wrap wrap
@@ -9,7 +9,15 @@
 
 .search-filter__block 
   &+& 
-    margin-left 60px 
+    margin-left 60px
+
+  &.btn-news
+    margin-top 20px
+	 .btn
+	  margin-left 0
+
+  &.author
+    width 300px
   
   & + &.lastname 
     margin-left 20px 
@@ -36,13 +44,7 @@
 
   &.tags 
     width 100%
-    max-width 300px
-    .add-tags__input 
-      width 100%
-      max-width 220px
-  
-    .add-tags__block 
-      margin-bottom 0  
+    max-width 300px 
    
   .select + .select 
     margin-top 0 
@@ -80,5 +82,35 @@
       max-width 50%
 
 .search-filter__select
+  position relative
   width 100%
-  max-width 130px 
+  max-width 130px
+  border-radius border-super-small
+  padding 10px 15px
+  height unset
+  font-size font-size-small-medium
+
+.search-filter__block.tags
+  .add-tags
+    display flex
+    align-items flex-end
+  .add-tags__block
+    display flex
+    flex-wrap wrap
+    gap 10px
+    min-height unset !important
+    margin 0 !important
+  .add-tags__item
+    margin 0
+  .add-tags__input
+    max-width 200px
+    border 1px solid #CBCBCB
+    box-sizing border-box
+    padding 10px 15px
+    font-size font-size-small-medium
+    display block
+    width 100%
+    padding 10px 15px !important
+    border-radius border-super-small
+    margin-bottom 0 !important
+    margin-right 20px

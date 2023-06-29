@@ -1,70 +1,89 @@
 <template>
-  <div class="im-dialog" :class="{ active, push }">
-    <router-link
+  <div class="im-dialog" :class="{ active, push }" v-if="filteredUserInfo.length !== 0">
+    <a
       class="im-dailog__pic"
-      :to="{
-        name: 'ProfileId',
-        params: { id: info.conversationPartner.id },
-      }"
+      href="#"
     >
       <div class="main-layout__user-pic">
         <img
-          v-if="info.conversationPartner.photo"
-          :src="info.conversationPartner.photo"
-          :alt="info.conversationPartner.firstName[0] + ' ' + info.conversationPartner.lastName[0]"
+          v-if="filteredUserInfo && filteredUserInfo[0].photo"
+          :src="filteredUserInfo && filteredUserInfo[0].photo"
+          :alt="filteredUserInfo && filteredUserInfo[0].firstName[0] + ' ' + filteredUserInfo && filteredUserInfo[0].lastName[0]"
         />
 
         <div v-else>
-          {{ info.conversationPartner.firstName[0] + ' ' + info.conversationPartner.lastName[0] }}
+          <unknow-user />
         </div>
       </div>
-    </router-link>
+    </a>
 
-    <div class="im-dialog__info">
-      <router-link
-        class="im-dialog__name"
-        :to="{
-          name: 'ProfileId',
-          params: { id: info.conversationPartner.id },
-        }"
-      >
-        {{ info.conversationPartner.firstName }}
-        {{ info.conversationPartner.lastName }}
-      </router-link>
-
-      <span class="user-status" v-if="!online" :class="{ online }">
-        Был(а) в сети
-        <br />
-        {{ this.info.conversationPartner.lastOnlineTime | moment('from') }}
-      </span>
-
-      <span class="user-status" v-else :class="{ online, offline: !online }"> онлайн </span>
-    </div>
-
-    <div class="im-dialog__content">
-      <p class="im-dialog__last">
-        <span class="im-dialog__last-me" v-if="me"> Вы: {{ info.lastMessage.messageText }}</span>
-        <span v-else> {{ info.lastMessage.messageText }}</span>
-      </p>
-
-      <span class="im-dialog__time">{{ info.lastMessage.time | moment('from') }}</span>
-    </div>
-
-    <span class="im-dialog__push" v-if="push > 0">{{ push }}</span>
+    <div class="im-dialog-contents">
+      <div class="im-dialog__info">
+        <a
+          class="im-dialog__name"
+          href="#"
+        >
+          {{ filteredUserInfo && filteredUserInfo[0].firstName }}
+          {{ filteredUserInfo && filteredUserInfo[0].lastName }}
+        </a>
+        <div class="im-dialog-online">
+          <span v-if="filteredUserInfo && filteredUserInfo[0].lastOnlineTime === null">был(а) в сети давно</span>
+          <span class="isonline-online" v-else-if="filteredUserInfo && filteredUserInfo[0].isOnline">Онлайн</span>
+          <span v-else>Был(а) в сети {{ filteredUserInfo && filteredUserInfo[0].lastOnlineTime | moment('from') }}</span>
+        </div>
+      </div>
+      <div class="im-dialog__content">
+        <p class="im-dialog__last">
+          <span class="im-dialog__last-me" v-if="!conversationPartner"> Вы: {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span>
+          <span v-else> {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span>
+          <span>{{ info.lastMessage && info.lastMessage[0]?.time }}</span>
+        </p>
+      </div>
+      <span class="im-dialog__push" v-if="push > 0">{{ push }}</span>
+      </div>
   </div>
 </template>
 
 <script>
+// import axios from 'axios';
+import { mapGetters, mapActions } from 'vuex';
+import UnknowUser from '../../Icons/UnknowUser.vue';
+
 export default {
   name: 'ImDialog',
+  components: { UnknowUser },
   props: {
     active: Boolean,
     push: Number,
     online: Boolean,
     me: Boolean,
     info: Object,
+    userInfo: Array,
   },
-  computed: {},
+
+  computed: {
+    ...mapGetters('profile/info', ['getInfo']),
+
+    conversationPartner() {
+    return this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
+           this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
+           null;
+    },
+
+    filteredUserInfo() {
+      return this.userInfo.filter(user => user.id === this.conversationPartner);
+    }
+  },
+
+  async mounted() {
+    if (!this.getInfo) {
+      await this.apiInfo();
+    }
+  },
+
+  methods: {
+    ...mapActions('profile/info', ['apiInfo']),
+  }
 };
 </script>
 
@@ -72,35 +91,51 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .im-dialog
+  &.active
+    background-color #f5fff9
+    border 1px solid ui-cl-color-eucalypt
+    color ui-cl-color-white-theme
+    &:hover
+      background-color #f5fff9
+      border 1px solid ui-cl-color-eucalypt
+
+.im-dialog-online
+  font-size font-size-super-small
+  background-color ui-cl-color-eucalypt
+  color ui-cl-color-white-theme
+  padding 3px
+  border-radius border-super-small
+  box-shadow box-shadow-main
+
+.im-dialog-contents
   display flex
+  flex-direction column
+  gap 5px
+
+.im-dialog
+  display flex
+  gap 10px
   align-items center
-  height 100px
+  background ui-cl-color-white-bright-second
+  border-radius border-small
   position relative
-  padding 0 6.38%
+  padding 20px
   z-index 0
+  transition all .2s ease-in-out
   cursor pointer
 
-  &:before
-    content ''
-    display none
-    width 100%
-    height 100%
-    position absolute
-    top 0
-    left 0
-    background-color #F8FAFD
-    z-index -1
+  .user-status
+    padding 4px
+    background-color ui-cl-color-eucalypt
+    font-size font-size-super-upsmall
+    line-height 100%
 
-  &:after
-    content ''
-    display block
-    height 1px
-    width 87.24%
-    background-color #E3E8EE
-    position absolute
-    bottom 0
-    left 50%
-    transform translateX(-50%)
+  &:not(:last-child)
+    margin-bottom 15px
+
+  &:hover
+    background ui-cl-color-c5c5c5
+
 
   &.push + &.active, &.active + &.push
     &:after
@@ -121,37 +156,32 @@ export default {
       display block
       background-color #E9F5EF
 
-    .im-dialog__content
-      max-width 30%
-
     .im-dialog__time
       color #7D9A8B
 
 .im-dailog__pic
   width 60px
-  height 60px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
-  margin-right 15px
   flex none
+  .main-layout__user-pic
+    width 60px
+    height 60px
+    margin-right 0
 
 .im-dialog__info
+  display flex
+  gap 5px
+  align-items center
   width 100%
-  max-width 35%
-  margin-right 60px
-  @media (max-width breakpoint-xl)
-    display none
 
 .im-dialog__name
-  font-size 12px
-  line-height 22px
-  color steel-gray
+  font-size font-size-default
+  color ui-cl-color-grey-color
+  font-weight font-weight-medium
   white-space nowrap
   overflow hidden
   text-overflow ellipsis
-
-.im-dialog__content
-  max-width 35%
 
   @media (max-width breakpoint-xl)
     display none
@@ -160,29 +190,29 @@ export default {
   white-space nowrap
   overflow hidden
   text-overflow ellipsis
-  font-size 12px
+  font-size font-size-small
   line-height 18px
   letter-spacing -0.003em
 
   &-me
-    color eucalypt
+    color ui-cl-color-eucalypt
 
 .im-dialog__time
-  color #A4A4B8
-  font-size 12px
+  color ui-cl-color-santas-gray
+  font-size font-size-small
   line-height 19px
 
 .im-dialog__push
   width 27px
   height 27px
-  border-radius 50%
+  border-radius border-half
   display flex
   align-items center
   justify-content center
-  font-size 12px
+  font-size font-size-small
   line-height 27px
-  font-weight 600
-  color #fff
+  font-weight font-weight-bold
+  color ui-cl-color-white-theme
   background-color #E65151
   margin-left auto
 

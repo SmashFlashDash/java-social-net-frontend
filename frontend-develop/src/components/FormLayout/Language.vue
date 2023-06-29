@@ -65,9 +65,9 @@ export default {
 .form-layout__language
   height 0
   width 100%
-  background #fff
+  background ui-cl-color-white-theme
   padding 35px 20px 20px 11.82%
-  color charade
+  color ui-cl-color-charade
   transition all 0.2s
 
   &.active
@@ -78,7 +78,7 @@ export default {
   font-weight 200
   font-size 30px
   letter-spacing -0.01em
-  color #000000
+  color ui-cl-color-full-black
   margin-bottom 15px
 
 .form-layout__language-search
@@ -94,7 +94,7 @@ export default {
     top 0
 
   .simple-svg
-    stroke steel-gray
+    stroke ui-cl-color-steel-gray
     fill transparent
 
 .form-layout__language-input
@@ -102,9 +102,9 @@ export default {
   border-bottom 1px solid #BBBBC7
   padding 0 20px 5px
   cursor pointer
-  font-weight 300
-  font-size 15px
-  color manatee
+  font-weight font-weight-light
+  font-size font-size-default
+  color ui-cl-color-manatee
 
 .form-layout__language-list
   display inline-flex
@@ -114,14 +114,14 @@ export default {
   max-height 350px
 
 .form-layout__language-item
-  font-weight 300
-  font-size 13px
+  font-weight font-weight-light
+  font-size font-size-small
   line-height 25px
-  color charade
+  color ui-cl-color-charade
   width 190px
   transition all 0.2s
   cursor pointer
 
   &:hover
-    color eucalypt
+    color ui-cl-color-eucalypt
 </style>

@@ -1,24 +1,37 @@
 <template>
-  <div class="search-users">
-    <search-block title="Люди" id="users">
+  <div class="search-users" v-if="users.length > 0">
+    <search-block :title="translations.searchUserTitle" id="users">
       <div class="friends__list">
-        <friends-block v-for="user in users" :key="user.id" :info="user" subscribe-button />
+        <block-search
+          v-for="user in users"
+          :key="user.id"
+          :info="user"
+          subscribe-button
+        />
       </div>
 
-      <pagination :count="total" v-model="page" :per-page="size" />
+      <pagination
+        :count="getUsersPagination.totalElements"
+        v-model="page"
+        :per-page="size"
+      />
     </search-block>
+  </div>
+  <div class="search-news__nonews" v-else>
+    {{ translations.searchUserEmpty }}
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import SearchBlock from '@/components/Search/Block';
-import FriendsBlock from '@/components/Friends/Block';
+import BlockSearch from '@/components/Friends/BlockSearch.vue';
 import Pagination from '@/components/Pagination.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'SearchUsers',
-  components: { SearchBlock, FriendsBlock, Pagination },
+  components: { SearchBlock, BlockSearch, Pagination },
   data() {
     return {
       page: 1,
@@ -28,9 +41,19 @@ export default {
   },
 
   computed: {
-    ...mapGetters('global/search', ['getResultById', 'getUsersQueryParams', 'getUsersPagination']),
+    ...mapGetters('global/search', ['getResultByIdSearch', 'getUsersQueryParams', 'getUsersPagination']),
+
     users() {
-      return this.getResultById('users');
+      return this.getResultByIdSearch('users');
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 

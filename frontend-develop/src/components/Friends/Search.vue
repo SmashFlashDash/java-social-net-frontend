@@ -1,41 +1,41 @@
 <template>
   <form action="#" class="friends-possible" @submit.prevent="onSearchUsers">
-    <h4 class="friends-possible__title">Параметры поиска</h4>
+    <h4 class="friends-possible__title">{{ translations.friendsFindParamsTitle }}</h4>
 
     <div class="friends-search">
       <div class="friends-search__row">
         <div class="friends-search__block">
-          <label for="friends-search-name" class="search__label">Имя:</label>
+          <label for="friends-search-name" class="search__label">{{ translations.createAccNameField1 }}:</label>
           <input type="text" class="search__input" id="friends-search-name" v-model="firstName" />
         </div>
       </div>
 
       <div class="friends-search__block">
-        <label class="search__label">Возраст:</label>
+        <label class="search__label">{{ translations.friendsFindYearTitle }}</label>
         <div class="search__row">
           <select class="select friends-search__select" v-model.number="ageFrom">
-            <option value="null" disabled>От</option>
-            <option v-for="age in ageFromArray" :value="age" :key="age">От {{ age }}</option>
+            <option value="null" disabled>{{ translations.friendsFindFrom }}</option>
+            <option v-for="age in ageFromArray" :value="age" :key="age">{{ translations.friendsFindFrom }} {{ age }}</option>
           </select>
 
           <span class="search__age-defis">—</span>
 
           <select class="select friends-search__select" v-model.number="ageTo">
-            <option value="null" disabled>До</option>
-            <option v-for="age in ageToArray" :value="age" :key="age">До {{ age }}</option>
+            <option value="null" disabled>{{ translations.friendsFindTo }}</option>
+            <option v-for="age in ageToArray" :value="age" :key="age">{{ translations.friendsFindTo }} {{ age }}</option>
           </select>
         </div>
       </div>
 
       <div class="friends-search__block">
-        <label class="search__label">Регион:</label>
+        <label class="search__label">{{ translations.friendsFindRegion }}</label>
         <div class="search__row">
           <select class="select friends-search__select" v-model="country">
-            <option value="null" disabled>Страна</option>
+            <option value="null" disabled>{{ translations.friendsFindCountry }}</option>
             <option v-for="c in countries" :key="c.id" :value="c">{{ c.title }}</option>
           </select>
           <select class="select friends-search__select" v-model="city">
-            <option value="null" disabled>Город</option>
+            <option value="null" disabled>{{ translations.friendsFindCity }}</option>
             <option v-for="c in currentCities" :key="c.id" :value="c">
               {{ c.title }}
             </option>
@@ -45,25 +45,23 @@
 
       <div class="friends-search__block">
         <label class="search__label checkbox-wrapper">
-          <span>Поиск по всем пользователям</span>
+          <span>{{ translations.friendsFindCheckbox }}</span>
           <input type="checkbox" class="checkbox" v-model="allUsers" />
         </label>
       </div>
     </div>
 
-    <button class="friends-possible__btn" type="submit">
-      <search-icon class="friends-possible__icon" />
-      <span class="friends-possible__link">Искать друзей</span>
+    <button class="recommend-block__search" type="submit">
+      {{ translations.recommendBlockBtn }}
     </button>
   </form>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import SearchIcon from '../../Icons/SearchIcon.vue';
+import translations from '@/utils/lang.js';
 export default {
   name: 'FriendsSearch',
-  components: { SearchIcon },
   data: () => ({
     firstName: null,
     lastName: null,
@@ -81,6 +79,15 @@ export default {
   }),
   computed: {
     ...mapState('global/geo', ['countries', 'cities']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
 
   watch: {
@@ -147,7 +154,7 @@ export default {
     right 0
     width 20px
     height 20px
-    border 2px solid #21a45d
+    border 2px solid ui-cl-color-eucalypt
 
   &::after
     content: ''
@@ -161,7 +168,7 @@ export default {
     right -2px
     top -11px
     font-size 27px
-    color #5f5e7a
+    color ui-cl-color-comet
     transform scale(1)
     opacity 1
 
@@ -175,7 +182,7 @@ export default {
   margin-top 25px
   padding-top 20px
   margin-bottom 30px
-  border-top 1px solid #E6E6E6
+  border-top 1px solid ui-cl-color-e6e6e6
 
 .friends-search__row
   @media (max-width breakpoint-xl)
@@ -198,6 +205,9 @@ export default {
 .friends-search__select
   display block
   width 100%
+  border-radius border-super-small
+  padding 13px 10px
+  height unset
 
   &+&
     margin-left 12px

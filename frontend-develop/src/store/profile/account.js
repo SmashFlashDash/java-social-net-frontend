@@ -8,36 +8,42 @@ export default {
       {
         icon: 'post',
         name: 'О новых публикациях',
+        nameEng: 'About new publications',
         type: 'POST',
         enable: false,
       },
       {
         icon: 'comments',
         name: 'О новых комментариях к моим публикациям',
+        nameEng: 'About new comments to my publications',
         type: 'POST_COMMENT',
         enable: false,
       },
       {
         icon: 'reviews',
         name: 'О ответах на мои комментарии',
+        nameEng: 'About the responses to my comments',
         type: 'COMMENT_COMMENT',
         enable: false,
       },
       {
         icon: 'friends',
         name: 'О заявках в друзья',
+        nameEng: 'About friend requests',
         type: 'FRIEND_REQUEST',
         enable: false,
       },
       {
         icon: 'messages',
         name: 'О новых личных сообщениях',
+        nameEng: 'About new private messages',
         type: 'MESSAGE',
         enable: false,
       },
       {
         icon: 'birthdays',
         name: 'О дне рождения друга',
+        nameEng: `About a friend's birthday`,
         type: 'FRIEND_BIRTHDAY',
         enable: false,
       },
@@ -50,6 +56,7 @@ export default {
       {
         icon: 'email',
         name: 'Отправлять уведомления на e-mail',
+        nameEng: 'Send notifications by e-mail',
         type: 'SEND_EMAIL_MESSAGE',
         enable: false,
       },
@@ -60,19 +67,21 @@ export default {
     getNotificationsSettings: (s) => s.notifications,
   },
 
-  mutations: {
-    setNotificationsSettings(state, notifications) {
-      let newSetting = [...state.notifications];
-      newSetting.map((el) => {
-        const foundElem = notifications.find((item) => {
-          return item.notification_type === el.type;
-        });
-        el.enable = foundElem.enable;
-        return el;
-      });
-      state.notifications = newSetting;
-    },
+mutations: {
+  setNotificationsSettings(state, notifications) {
+    state.notifications.forEach((el) => {
+      switch (el.type) {
+        case 'POST': el.enable = notifications.enablePost; break;
+        case 'POST_COMMENT': el.enable = notifications.enablePostComment; break;
+        case 'COMMENT_COMMENT': el.enable = notifications.enableCommentComment; break;
+        case 'FRIEND_REQUEST': el.enable = notifications.enableFriendRequest; break;
+        case 'MESSAGE': el.enable = notifications.enableMessage; break;
+        case 'FRIEND_BIRTHDAY': el.enable = notifications.enableFriendBirthday; break;
+        case 'SEND_EMAIL_MESSAGE': el.enable = notifications.enableSendEmailMessage;
+      }
+    });
   },
+},
 
   actions: {
     passwordRecovery(context, email) {

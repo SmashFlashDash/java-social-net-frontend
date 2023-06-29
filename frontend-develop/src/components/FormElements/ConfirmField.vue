@@ -1,5 +1,5 @@
 <template>
-  <div class="form__group">
+  <div class="form__group last-block_reg">
     <input
       type="checkbox"
       name="confirm"
@@ -10,15 +10,16 @@
     />
 
     <label :for="id" class="form__checkbox-label">
-      <span>Я согласен с </span>
-      <a href="#">полит. конф-ти</a>
-      <span> и передачей </span>
-      <a href="">перс. данных</a>
+      <span>{{ translations.confirmComponent1 }}</span>
+      <a href="#">{{ translations.confirmComponent2 }}</a>
+      <span>{{ translations.confirmComponent3 }}</span>
+      <a href="">{{ translations.confirmComponent4 }}</a>
     </label>
   </div>
 </template>
 
 <script>
+import translations from '@/utils/lang.js';
 export default {
   name: 'ConfirmField',
   props: {
@@ -43,6 +44,14 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
+    },
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 };

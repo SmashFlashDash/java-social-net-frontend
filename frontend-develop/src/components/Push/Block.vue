@@ -41,8 +41,10 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .push-block
-  background #fff
+  background ui-cl-color-white-theme
   padding 25px 30px
   box-shadow 0px 2px 60px rgba(0, 0, 0, 0.1)
   display flex
@@ -65,11 +67,11 @@ export default {
 .push__img
   width 36px
   height 36px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 15px
   flex none
-  background-color #e6f4eb
+  background-color ui-cl-color-e6f4eb
 
   img
     display flex

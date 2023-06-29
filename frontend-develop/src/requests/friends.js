@@ -2,8 +2,8 @@ import axios from 'axios';
 
 export default {
   get(query) {
-    if (Array.isArray(query)) return axios.get(`friends?size=3&${query.join('&')}`);
-    if (typeof query === 'string') return axios.get(`friends?size=3&${query}`);
+    if (Array.isArray(query)) return axios.get(`friends?${query.join('&')}`);
+    if (typeof query === 'string') return axios.get(`friends?${query}`);
 
     throw new TypeError('Недопустимое значение запроса');
   },
@@ -37,11 +37,19 @@ export default {
     throw new TypeError('Недопустимое значение запроса');
   },
 
-  changeBlockUser(id) {
+  blockedUser(id) {
     return axios.put(`friends/block/${id}`);
+  },
+
+  unblockUser(id) {
+    return axios.put(`friends/unblock/${id}`);
   },
 
   friendRequestsCount() {
     return axios.get('/friends/count');
   },
+
+  friendSearch(firstName, statusCode) {
+    return axios.get(`account/search/statusCode?firstName=${firstName}&statusCode=${statusCode}`);
+  }
 };

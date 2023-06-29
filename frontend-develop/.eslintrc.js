@@ -8,17 +8,6 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    'vue/html-indent': [
-      'error',
-      2,
-      {
-        attribute: 1,
-        baseIndent: 1,
-        closeBracket: 0,
-        alignAttributesVertically: true,
-        ignores: [],
-      },
-    ],
     'vue/max-attributes-per-line': [
       'error',
       {
@@ -136,12 +125,6 @@ module.exports = {
       },
     ],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
-    'prettier/prettier': [
-      'error',
-      {
-        singleQuote: true,
-        endOfLine: 'auto',
-      },
-    ],
+    'prettier/prettier': 0,
   },
 };

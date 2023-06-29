@@ -1,6 +1,6 @@
 <template>
   <div class="form__group" :class="{ fill: password.length > 0 }">
-    <label class="form__label_stylus" :for="id">Пароль</label>
+    <label class="form__label_stylus" :for="id">{{ translations.passLogin }}</label>
 
     <input
       class="form__input_stylus"
@@ -12,9 +12,10 @@
       :class="{
         invalid: (v.$dirty && !v.required) || (v.$dirty && !v.minLength),
       }"
+      pattern="[A-Za-z0-9!@#$%^&*]+"
     />
 
-    <span class="form__error" v-if="v.$dirty && !v.required">Введите пароль</span>
+    <span class="form__error" v-if="v.$dirty && !v.required">{{ translations.passLoginEnter }}</span>
 
     <div class="form__error-block_">
       <template v-if="registration">
@@ -26,9 +27,9 @@
 
       <template v-else>
         <span class="form__error" v-if="v.$dirty && !v.minLength">
-          Пароль должен быть не менее
+          {{ translations.validatePass1 }}
           {{ v.$params.minLength.min }}
-          символов. Сейчас он
+          {{ translations.validatePass2 }}
           {{ password.length }}
         </span>
       </template>
@@ -40,8 +41,7 @@
       </div>
 
       <p class="form__password-info">
-        Пароль должен состоять из латинских букв, цифр и знаков. Обязательно содержать одну
-        заглавную букву, одну цифру и состоять из 8 символов.
+        {{ translations.passInfo }}
       </p>
     </template>
 
@@ -57,6 +57,8 @@
 </template>
 
 <script>
+import translations from '@/utils/lang.js';
+
 export default {
   name: 'PasswordField',
   props: {
@@ -91,10 +93,18 @@ export default {
     levelInfo() {
       if (!this.passwordHelperShow) return { text: null, class: null };
       return this.password.length >= 3 && this.password.length < 7
-        ? { text: 'слабый', class: 'easy' }
+        ? { text: this.translations.passLevelFirst , class: 'easy' }
         : this.password.length >= 7 && this.password.length < 11
-        ? { text: 'средний', class: 'middle' }
-        : this.password.length >= 11 && { text: 'надёжный', class: 'hard' };
+        ? { text: this.translations.passLevelSecond, class: 'middle' }
+        : this.password.length >= 11 && { text: this.translations.passLevelTree, class: 'hard' };
+    },
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
   methods: {

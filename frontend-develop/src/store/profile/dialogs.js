@@ -16,7 +16,7 @@ export default {
   getters: {
     getDialogs: (s) => s.dialogs,
     getMessages: (s) => s.messages,
-    oldestKnownMessageId: (s) => (s.messages.length > 0 ? s.messages[0]['id'] : null),
+    oldestKnownMessageId: (s) => (s.messages),
     activeDialog: (s) => s.dialogs.find((el) => el.id == s.activeDialogId),
     getActiveDialogId: (s) => +s.activeId,
     dialogsLoaded: (s) => s.dialogsLoaded,
@@ -52,53 +52,58 @@ export default {
   },
 
   actions: {
-    async fetchMessages({ commit }, dialogId) {
-      const response = await dialogsApi.getMessages(dialogId);
-      if (!Object.keys(response.data).length) return;
-      const { data } = response.data;
-      const messages = data.map((message) => ({ ...message, time: message.time * 1000 }));
-      commit('clearMessages');
-      commit('addMessages', {
-        messages,
-        total: response.data.total,
-      });
-    },
-
-    async fetchDialogs({ commit }) {
+    // Создание диалога. Если нет диалога - создаём, если есть - получаем;
+    // Запрос: axios.get(`/dialogs/recipientId/${id}`);
+    async newDialogs({ commit }, recipientId) {
       try {
-        const response = await dialogsApi.getDialogs();
-        if (response.data?.data?.length === 0) return;
-
-        const dialogs = [];
-        const { data } = response.data;
-        data.forEach((d) => {
-          const conversationPartnerId = d.conversationPartner.id;
-          const newDialog = {
-            id: conversationPartnerId,
-            unreadCount: d.unreadCount,
-            lastMessage: {
-              time: d.lastMessage.time,
-              messageText: d.lastMessage.messageText,
-              authorId: d.lastMessage.authorId,
-            },
-            conversationPartner: d.conversationPartner,
-          };
-          dialogs.push(newDialog);
-        });
-        commit('setDialogs', dialogs);
+        const response = await dialogsApi.newDialogs(recipientId);
+        if (!response.data) return;
+        const { data } = response.data || {}; // добавляем проверку на существование content
+        commit('selectDialog', data);
       } catch (err) {
-        console.log({ err });
+        console.log(err);
       }
     },
 
-    async apiUnreadedMessages({ commit }) {
-      const response = await dialogsApi.unreadedMessages();
-      const { count } = response.data.data;
-      commit('setUnreadedMessages', count);
+    // Получаем сообщения диалога по dialogId
+    // Запрос: dialogs/messages?recipientId=${id}&page=0&size=1&sort=time,desc
+    async fetchMessages({ commit }, dialogId) {
+      const response = await dialogsApi.getMessages(dialogId);
+      if (!response.lastMessage) return;
+      const messages = [{
+        ...response.lastMessage,
+      }];
+      commit('clearMessages');
+      commit('addMessages', {
+        messages,
+        total: response.unreadCount,
+      });
     },
 
-    async markReadedMessages(_, id) {
+    // Получаем все диалоги:
+    // Запрос: /dialogs?page=0&sort=unreadCount,desc
+    async fetchDialogs({ commit }) {
+      try {
+
+        const response = await dialogsApi.getDialogs();
+        if (response.data?.content?.length === 0) return;
+
+        const data = response.data.content;
+        commit('setDialogs', data);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async apiUnreadedMessages({ commit, dispatch }) {
+      const { data } = await dialogsApi.unreadedMessages();
+      commit('setUnreadedMessages', data);
+      await dispatch('fetchDialogs');
+    },
+
+    async markReadedMessages({ dispatch }, _, id) {
       await dialogsApi.markReaded(id);
+      await dispatch('fetchDialogs');
     },
   },
 };

@@ -21,9 +21,7 @@ export default {
   },
 
   push(data, isPUT = true, id = '', query = '') {
-    // push(data, isPUT = true, query = '') {
     return isPUT ? axios.put(`post${id}${query}`, data) : axios.post(`post${query}`, data);
-    // return isPUT ? axios.put(`post/${query}`, data) : axios.post(`post${query}`, data);
   },
 
   delete(id) {

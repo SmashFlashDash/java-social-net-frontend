@@ -46,18 +46,15 @@ export default {
         { status: 'success', text: 'Зарегистрирован, делаю логин' },
         { root: true }
       );
-
-      // await dispatch('login', {
-      //   email: user.email,
-      //   password: user.password1,
-      // });
     },
-    // pollingToken({ commit, dispatch }) {
-    //   const interval = setInterval(() => {
-    //     dispatch("refreshToken");
-    //   }, 1000 * 600 * 1.5);
-    //   commit("setPollingInterval", interval);
-    // },
+
+    pollingToken({ commit, dispatch }) {
+      const interval = setInterval(() => {
+        dispatch("refreshToken");
+      }, 1000 * 600 * 1.5);
+      commit("setPollingInterval", interval);
+    },
+
     async refreshToken({ commit, state, dispatch }) {
       if (state.refreshAttempts > 3) {
         console.warn('Cannot refresh token. Logging out...', state.pollingToken);

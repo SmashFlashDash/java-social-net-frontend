@@ -1,7 +1,6 @@
 <!-- eslint-disable max-len -->
 <template>
   <icon-box
-    :class="{ not_empty: isNotEmpty }"
     width="17"
     height="17"
     viewBox="0 0 17 17"
@@ -18,20 +17,10 @@ import IconBox from './IconBox.vue';
 
 export default {
   components: { IconBox },
-  props: {
-    isNotEmpty: {
-      type: Boolean,
-      default: false,
-    },
-  },
 };
 </script>
 
 <style lang="stylus">
-.not_empty
-  animation-duration 1s
-  animation-name slidein
-  animation-iteration-count infinite
 
 @keyframes slidein
   from

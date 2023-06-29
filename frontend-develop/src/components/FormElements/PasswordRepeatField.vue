@@ -1,6 +1,6 @@
 <template>
   <div class="form__group" :class="{ fill: password.length > 0 }">
-    <label :for="id" class="form__label_stylus">Повторите пароль</label>
+    <label :for="id" class="form__label_stylus">{{ translations.repeatPassword }}</label>
 
     <input
       type="password"
@@ -17,16 +17,18 @@
       @change="v.$touch()"
     />
 
-    <span class="form__error" v-if="v.$dirty && !v.sameAsPassword">Пароли должны совпадать</span>
+    <span class="form__error" v-if="v.$dirty && !v.sameAsPassword">{{ translations.matchPassword }}</span>
 
     <span class="form__error" v-if="v.$dirty && !v.minLength">
-      Пароль должен быть не менее {{ v.$params.minLength.min }} символов. Сейчас он
+      {{ translations.validatePass1 }} {{ v.$params.minLength.min }} {{ translations.validatePass2 }}
       {{ password.length }}
     </span>
   </div>
 </template>
 
 <script>
+import translations from '@/utils/lang.js';
+
 export default {
   name: 'PasswordRepeatField',
   props: {
@@ -51,6 +53,14 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
+    },
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 };

@@ -7,6 +7,7 @@ export default {
     Vue.prototype.$socket = {
       connect() {
         const serverUrl = 'ws://' + options.server + '/api/v1/streaming/ws';
+        console.log(serverUrl);
         socket = new WebSocket(serverUrl);
         console.log('function connect');
         socket.onopen = () => {
@@ -71,7 +72,7 @@ export default {
 
         socket.onclose = (e) => {
           // Сервер недоступен
-          console.log('connecttion closed!!', { e });
+          console.log(`[close] Соединение закрыто чисто, код = ${e.code} причина = ${e.reason}`, { e });
           return;
         };
       },
@@ -90,14 +91,15 @@ export default {
           let msg = event.data;
           try {
             serverMessage = JSON.parse(msg);
-            //somthing strange, it throws error but parses to json
+            console.log('Сработал в файле websocket.js')
             console.log(serverMessage);
           } catch (e) {
             console.log(e);
           }
-          callback(serverMessage);
+          callback(serverMessage); // вызываем переданную колбэк функцию и передаем ей полученное сообщение
         };
       },
+
     };
   },
 };

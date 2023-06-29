@@ -9,8 +9,8 @@ export default {
     return axios.post('auth/login', user);
   },
 
-  refreshToken(token) {
-    return axios.post('auth/refresh', { token });
+  refreshToken(refreshToken) {
+    return axios.post('auth/refresh', { refreshToken });
   },
 
   logout() {

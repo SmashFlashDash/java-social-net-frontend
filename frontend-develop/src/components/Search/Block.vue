@@ -40,7 +40,7 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .search-block
-  max-width 1060px
+  width 100%
 
   &+&
     margin-top 70px
@@ -53,12 +53,12 @@ export default {
 
 .search-block__title
   font-family font-exo
-  font-weight 200
+  font-weight font-weight-light
   font-size 30px
-  color #000000
+  color ui-cl-color-full-black
 
 .search-block__more
-  font-size 13px
+  font-size font-size-small
   text-align right
-  color #21A45D
+  color ui-cl-color-eucalypt
 </style>

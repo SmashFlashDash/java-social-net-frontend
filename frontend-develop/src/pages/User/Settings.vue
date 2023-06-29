@@ -1,6 +1,8 @@
 <template>
   <div class="settings inner-page">
-    <h1 class="settings__title">{{ activeComponent.text }}</h1>
+    <h1 class="settings__title">
+      {{ currentTranslations === 'Русский' ? activeComponent.text : activeComponent.textEng }}
+    </h1>
     <div class="settings__wrap">
       <div class="inner-page__main">
         <component :is="activeComponent.component" />
@@ -30,8 +32,14 @@ export default {
   },
 
   data: () => ({
-    activeComponent: { component: 'settings-main', text: 'Основные' },
+    activeComponent: { component: 'settings-main', text: 'Основные', textEng: 'Main' },
   }),
+
+  computed: {
+    currentTranslations() {
+      return this.$store.state.auth.languages.language.name;
+    },
+  },
 
   methods: {
     onChange(item) {
@@ -66,7 +74,10 @@ export default {
     display none
 
 .settings__wrap
-  display flex
+  display grid
+  gap 20px
+  grid-template-columns 1fr 430px
+
 
   @media (max-width breakpoint-xl)
     flex-direction column-reverse

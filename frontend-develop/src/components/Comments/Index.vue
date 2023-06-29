@@ -1,12 +1,13 @@
 <template>
   <div class="comments" :class="{ 'comments--admin': admin }">
     <div class="comments__add" v-if="!admin">
-      <comment-add ref="addComment" :id="id" v-model="commentText" @submited="onSubmitComment" />
+      <comment-add
+        ref="addComment"
+        :id="id"
+        v-model="commentText"
+        @submited="onSubmitComment"
+      />
     </div>
-
-    <h4 class="comments__title" v-if="info">
-      <span>Комментарии ({{ info.totalElements }})</span>
-    </h4>
 
     <div class="comments__list" v-if="getInfo && info">
       <comment-block
@@ -33,7 +34,7 @@ export default {
   props: {
     admin: Boolean,
     info: Object,
-    id: Number,
+    id: String,
     edit: Boolean,
     deleted: Boolean,
   },
@@ -47,6 +48,12 @@ export default {
     showText() {
       return this.isOpenComments ? 'скрыть' : 'показать';
     },
+  },
+
+  watch: {
+    likeAmout() {
+      return this.info.totalElements
+    }
   },
 
   methods: {
@@ -84,6 +91,9 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+.comments-no
+  margin-bottom 0
+
 .comments
   &.open
     .comment-block, .comment-block__reviews
@@ -102,22 +112,20 @@ export default {
 .comments__title
   display flex
   align-items center
-  margin-bottom 15px
+  margin-bottom 30px
 
   span
-    font-family font-exo
-    font-weight bold
-    font-size 15px
-    color #000
+    font-weight font-weight-bold
+    font-size font-size-default
+    color ui-cl-color-medium-grey-light
     display block
-    margin-right 5px
 
 .comments__show
-  font-size 13px
-  color eucalypt
+  font-size font-size-small
+  color ui-cl-color-eucalypt
 
 .comments__list
   width 100%
-  max-width 550px
-  padding-left 30px
+
+
 </style>

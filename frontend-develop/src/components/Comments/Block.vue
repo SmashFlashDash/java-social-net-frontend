@@ -28,25 +28,27 @@
         v-if="!currentSubComents && info.commentsCount"
         @click.prevent="showSubComments"
       >
-        показать {{ info.commentsCount }} {{ answerText }}
+        {{ translations.commentAnswerShow }} {{ info.commentsCount }} {{ answerText }}
       </a>
 
       <div class="comment-block__reviews-list" v-show="currentSubComents">
-        <div v-if="currentSubComents">
-          <comment-main
-            :isSubcomment="true"
-            :admin="admin"
-            v-for="i in currentSubComents.value"
-            :key="i.id"
-            :info="i"
-            :edit="getInfo.id === i.author.id"
-            :deleted="getInfo.id === i.author.id"
-            @answer-comment="onAnswerSub"
-            @edit-comment="onEditSub"
-            @delete-comment="onDeleteSubComment"
-            @recover-comment="onRecoverSubComment"
-          />
-        </div>
+        <transition name="fade">
+          <div v-if="currentSubComents" class="subcomments">
+            <comment-main
+              :isSubcomment="true"
+              :admin="admin"
+              v-for="i in currentSubComents.value"
+              :key="i.id"
+              :info="i"
+              :edit="getInfo.id === i.author.id"
+              :deleted="getInfo.id === i.author.id"
+              @answer-comment="onAnswerSub"
+              @edit-comment="onEditSub"
+              @delete-comment="onDeleteSubComment"
+              @recover-comment="onRecoverSubComment"
+            />
+          </div>
+        </transition>
 
         <comment-add
           :isSubcomment="true"
@@ -66,6 +68,7 @@
 import CommentMain from '@/components/Comments/Main';
 import CommentAdd from '@/components/Comments/Add';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'CommentBlock',
@@ -88,9 +91,18 @@ export default {
     ...mapGetters('profile/info', ['getInfo']),
     ...mapState('profile/comments', ['subComments']),
 
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+
     answerText() {
-      if (!this.info) return 'ответ';
-      return this.info.commentsCount && this.info.commentsCount > 1 ? 'ответа' : 'ответ';
+      if (!this.info) return this.translations.commentAnswerTextSecond;
+      return this.info.commentsCount && this.info.commentsCount > 1 ? this.translations.commentAnswerTextFirst : this.translations.commentAnswerTextSecond;
     },
 
     currentSubComents() {
@@ -190,14 +202,13 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .comment-block
-  padding-top 20px
   position relative
-
-  & + &
-    margin-top 20px
 
     &:after
       display block
+
+  &:not(:last-child)
+    margin-bottom 20px
 
   &.show-comments
     & + .comment-block
@@ -206,45 +217,52 @@ export default {
       &:after
         width 100%
 
-    .comment-block__reviews
-      border-top 1px solid #e7e7e7
-      padding-top 40px
-
   .comment-add
-    height 50px
+
+    &.is-subcomment
+      padding 15px 0
+      margin-top 0
+      border-top 0
+
+  .comment-main
+    padding 15px 0
 
 
 .comment-block__reviews
-  margin-top 15px
   max-width calc(100% - 50px)
   margin-left auto
 
 .comment-block__reviews-show
-  color eucalypt
-  font-size 13px
-  font-weight 600
-  display flex
-  align-items center
+  color ui-cl-color-eucalypt
+  font-size font-size-small
+  font-weight font-weight-bold
+  display inline-flex
+  align-items flex-start
 
   &:before
-    content ''
+    content '↳'
     display block
     width 7px
-    height 7px
-    margin-right 7px
-    border 1.5px solid transparent
-    border-radius 2px
-    border-top-color eucalypt
-    border-right-color eucalypt
-    transform rotate(45deg)
-
-.comment-block__reviews-list
-  .comment-main + .comment-main
-    margin-top 15px
-    padding-top 15px
-    border-top 1px solid #e7e7e7
+    margin-right 5px
+    font-size font-size-small
 
   .comment-main__pic
     width 30px
     height 30px
+.subcomments
+  &.fade-enter-active,
+  &.fade-leave-active
+    transition all .2s ease-in-out
+  &.fade-enter,
+  &.fade-leave-to
+    opacity 0
+  .comment-main
+    padding-top 15px !important
+    margin-bottom 0
+  .comment-add__pic
+    width 30px
+    height 30px
+    font-size font-size-super-small
+  .comment-main__pic
+    margin-right 0
 </style>

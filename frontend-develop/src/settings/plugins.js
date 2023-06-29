@@ -14,7 +14,17 @@ Vue.use(VueToastify);
 
 import moment from 'moment';
 
-moment.locale('ru');
+const language = JSON.parse(localStorage.getItem('selectedLanguage'))
+if (language) {
+  if (language.name === 'Русский') {
+    moment.locale('ru')
+  } else {
+    moment.locale('en')
+  }
+} else {
+  moment.locale('ru')
+}
+
 import VueMoment from 'vue-moment';
 Vue.use(VueMoment, {
   moment,
@@ -22,10 +32,8 @@ Vue.use(VueMoment, {
 
 // import chat from "@/plugins/socketio";
 import chat from '@/plugins/websocket';
-// Vue.use(chat, { server: '212.22.94.79:80' });
-Vue.use(chat, { server: '82.202.214.42:80' });
+Vue.use(chat, { server: '82.202.214.42' }); // <- для стэнда, чтобы работал websocket.
 
 // import VueSocketIO from 'vue-socket.io';
-// Vue.use(chat, { server: 'localhost:8088' });
-
+// Vue.use(chat, { server: 'localhost:8080' }); // <- для локальной разработки. При выгрузке на стэнд закомментировать.
 // Vue.use(chat, { server: 'localhost:8099' });

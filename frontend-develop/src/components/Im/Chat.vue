@@ -1,24 +1,24 @@
 <template>
-  <div class="im-chat">
+  <div class="im-chat" v-if="filteredUserInfo && filteredUserInfo.length > 0">
     <div class="im-chat__user">
       <router-link
         class="im-chat__user-pic"
         :to="{
           name: 'ProfileId',
-          params: { id: info.conversationPartner.id },
+          params: { id: filteredUserInfo && filteredUserInfo[0]?.id },
         }"
       >
         <div class="main-layout__user-pic">
           <img
-            v-if="info.conversationPartner.photo"
-            :src="info.conversationPartner.photo"
+            v-if="filteredUserInfo && filteredUserInfo[0]?.photo"
+            :src="filteredUserInfo && filteredUserInfo[0]?.photo"
             :alt="
-              info.conversationPartner.firstName[0] + ' ' + info.conversationPartner.firstName[0]
+              filteredUserInfo && filteredUserInfo[0]?.firstName[0] + ' ' + filteredUserInfo && filteredUserInfo[0]?.firstName[0]
             "
           />
 
           <div v-else>
-            {{ info.conversationPartner.firstName[0] }}
+            <unknow-user />
           </div>
         </div>
       </router-link>
@@ -27,25 +27,41 @@
         class="im-chat__user-name"
         :to="{
           name: 'ProfileId',
-          params: { id: info.id },
+          params: { id: filteredUserInfo && filteredUserInfo[0]?.id },
         }"
       >
-        {{ info.conversationPartner.firstName }}
+        {{ filteredUserInfo && filteredUserInfo[0]?.firstName }} {{ filteredUserInfo && filteredUserInfo[0]?.lastName }}
       </router-link>
 
-      <span class="user-status" :class="{ online }">
-        Был(а) в сети
-        {{ this.info.conversationPartner.lastOnlineTime | moment('from') }}
-      </span>
+      <div>
+        <span
+          class="user-status chat-isonline-lasttime"
+          v-if="filteredUserInfo[0]?.lastOnlineTime === null"
+        >
+          {{ translations.messageStatusLongAgo }}
+        </span>
+        <span
+          class="user-status chat-isonline-isonline-online"
+          v-else-if="filteredUserInfo[0]?.isOnline"
+        >
+          {{ translations.profileInfoStatusOnline }}
+        </span>
+        <span
+          class="user-status chat-isonline-isonline-lasttime"
+          v-else
+        >
+          {{ translations.messageStatusWasOnline }} {{ filteredUserInfo[0]?.lastOnlineTime | moment('from') }}
+        </span>
+      </div>
     </div>
 
-    <div class="im-chat__infitite_list_wrapper">
+    <div class="im-chat__infitite_list_wrapper chat-message">
       <virtual-list
         class="im-chat__infitite_list scroll-touch"
         :size="60"
         :keeps="120"
-        data-key="id"
-        :data-sources="messagesGrouped"
+        :data-key="'id'"
+        :data-sources="messageDialog"
         :data-component="itemComponent"
         :wrap-class="'im-chat__message'"
         :root-tag="'section'"
@@ -56,7 +72,7 @@
       >
         <div class="im-chat__loader" slot="header" v-show="fetching">
           <div class="spinner" v-show="!isHistoryEndReached()" />
-          <div class="finished" v-show="isHistoryEndReached()">Больше сообщений нет</div>
+          <div class="finished" v-show="isHistoryEndReached()">{{ translations.messageHistoryIsFinal }}</div>
         </div>
       </virtual-list>
     </div>
@@ -65,7 +81,7 @@
       <input
         class="im-chat__enter-input"
         type="text"
-        placeholder="Ваше сообщение..."
+        :placeholder="translations.messageInputPlaceholder"
         v-model="mes"
       />
     </form>
@@ -74,8 +90,11 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
-import ChatMessage from '@/components/Im/ChatMessage';
+import UnknowUser from '../../Icons/UnknowUser.vue';
+import axios from 'axios';
+import ChatMessage from '@/components/Im/ChatMessage.vue'
 import VirtualList from 'vue-virtual-scroll-list';
+import translations from '@/utils/lang.js';
 
 const makeHeader = (msgDate) => {
   return { id: `group-${msgDate}`, stubDate: true, date: msgDate };
@@ -84,74 +103,120 @@ const makeHeader = (msgDate) => {
 export default {
   name: 'ImChat',
   components: {
-    VirtualList,
+    UnknowUser,
+    VirtualList
   },
 
   props: {
     info: Object,
     messages: Array,
     online: Boolean,
+    userInfo: Array
   },
 
   data: () => ({
     mes: '',
-    itemComponent: ChatMessage,
     isUserViewHistory: false,
+    itemComponent: ChatMessage,
     fetching: false,
     lastId: -1,
+    infoChatUser: null,
+    messageDialog: []
   }),
 
   computed: {
+    ...mapGetters('profile/info', ['getInfo']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+
     messagesGrouped() {
       let groups = [];
       let headerDate = null;
 
-      for (const msg of this.messages) {
+      for (let i = 0; i < this.messages.length; i++) {
+        const msg = this.messages[i];
         const msgDate = new Date(msg.time).toDateString();
         if (msgDate !== headerDate) {
           headerDate = msgDate;
           groups.push(makeHeader(headerDate));
         }
-        msg.isSentByMe = +msg.authorId === +this.getInfo().id;
+        msg.isSentByMe = msg.authorId === this.getInfo.id;
+        msg.id = `message-${i}`; // добавляем уникальный ключ
         groups.push(msg);
       }
       return groups;
     },
+
+    getInfoConversationPartner() {
+      return this.info?.conversationPartner1 === this.getInfo?.id ? this.info?.conversationPartner2 :
+           this.info?.conversationPartner2 === this.getInfo?.id ? this.info?.conversationPartner1 :
+           null;
+    },
+
+    filteredUserInfo() {
+      return this.userInfo?.filter(user => user.id === this.getInfoConversationPartner);
+    }
+
   },
 
   watch: {
     messages() {
       if (this.follow) this.setVirtualListToBottom();
     },
+
+    async getInfoConversationPartner() {
+      this.getMessageChat()
+    }
   },
 
-  mounted() {
+
+  async mounted() {
     this.follow = true;
-    this.markReadedMessages(this.$route.params.activeDialogId);
-    this.$refs.vsl.scrollToBottom();
+    await axios.put(`dialogs/${this.info.id}`)
+    if (!this.getInfo) {
+      await this.apiInfo();
+      this.getInfoChat();
+    }
   },
 
   methods: {
-    ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages', 'markReadedMessages']),
+    ...mapActions('profile/dialogs', ['postMessage', 'fetchMessages', 'loadOlderMessages', 'markReadedMessages']),
     ...mapGetters('profile/dialogs', ['isHistoryEndReached', 'getDialogs']),
-    ...mapGetters('profile/info', ['getInfo']),
     ...mapMutations('profile/dialogs', ['addOneMessage']),
+    ...mapActions('profile/info', ['apiInfo']),
+
+    getInfoChat() {
+      const conversationPartnerId = this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
+            this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
+            null;
+      console.log(conversationPartnerId)
+      const user = this.userInfo.find(user => user.id === conversationPartnerId);
+      this.infoChatUser = user;
+    },
 
     onSubmitMessage() {
       if (!this.mes.trim()) return;
-      const time = new Date().getTime();
       const payload = {
         type: 'MESSAGE',
-        accountId: this.info.conversationPartner.id,
+        recipientId: this.info.conversationPartner2,
         data: {
-          id: this.lastId,
-          authorId: this.getInfo().id,
+          time: null,
+          conversationPartner1: this.info.conversationPartner1,
+          conversationPartner2: this.info.conversationPartner2,
           messageText: this.mes,
-          recipientId: this.info.conversationPartner.id,
-          time,
+          readStatus: null,
+          dialogId: this.info.id
         },
       };
       this.addOneMessage(payload.data);
+      this.getMessageChat();
       this.$socket.sendMessage(payload);
       this.lastId -= 1;
       this.mes = '';
@@ -178,6 +243,16 @@ export default {
           });
         }
       }
+    },
+
+    getMessageChat() {
+      axios.get(`dialogs/messages?recipientId=${this.getInfoConversationPartner}&page=0&sort=time,asc`)
+      .then(response => {
+        this.messageDialog = response.data.content
+      })
+      .catch(error => {
+        console.log(error)
+      })
     },
 
     onScroll() {
@@ -212,36 +287,53 @@ export default {
   flex-direction column
   height 100%
 
+.isonline-online
+  color ui-cl-color-white-bright-second
+  background-color ui-cl-color-eucalypt
+
 .im-chat__user
-  border-bottom 1px solid #E3E8EE
   display flex
   align-items center
-  height 60px
+  height 40px
   padding 30px 20px
-  font-size 13px
-  background-color #F8FAFD
+  font-size font-size-small
+  background-color ui-cl-color-white-bright-second
+  border-bottom 1px solid #d2d4d7
+
+  .user-status
+    padding 4px
+    font-size font-size-super-upsmall
+    line-height 100%
 
 .im-chat__user-pic
   width 40px
   height 40px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 10px
+  .main-layout__user-pic
+    width 40px
+    height 40px
 
 .im-chat__user-name
-  font-weight 600
-  color steel-gray
+  font-weight font-weight-bold
+  font-size font-size-default
+  color ui-cl-color-steel-gray
   margin-right auto
 
 .im-chat__user-status
   color #9EA4AD
 
   &.online
-    color eucalypt
+    color ui-cl-color-eucalypt
 
 .im-chat__infitite_list_wrapper
+  padding 20px
   position relative
+  overflow-y auto
   flex 1
+  &.div:not(:last-child)
+    margin-bottom 20px
 
 .im-chat__infitite_list
   position absolute
@@ -260,10 +352,10 @@ export default {
 
 .im-chat__enter-input
   width 100%
-  background-color #cff2dc
+  background-color ui-cl-color-363636
   padding 0 40px
-  font-size 15px
-  color steel-gray
+  font-size font-size-default
+  color ui-cl-color-white-theme
   height 80px
 
   &::placeholder
@@ -273,19 +365,19 @@ export default {
   padding 1em
 
   .finished
-    font-size 14px
+    font-size font-size-small
     text-align center
     color #bfbfbf
 
   .spinner
-    font-size 10px
+    font-size font-size-super-upsmall
     margin 0 auto
     text-indent -9999em
     width 25px
     height 25px
-    border-radius 50%
-    background #ffffff
-    background linear-gradient(to right, eucalypt 10%, rgba(255, 255, 255, 0) 42%)
+    border-radius border-half
+    background ui-cl-color-white-theme
+    background linear-gradient(to right, ui-cl-color-eucalypt 10%, rgba(255, 255, 255, 0) 42%)
     position relative
     animation load3 1.4s infinite linear
     transform translateZ(0)
@@ -293,7 +385,7 @@ export default {
   .spinner:before
     width 50%
     height 50%
-    background eucalypt
+    background ui-cl-color-eucalypt
     border-radius 100% 0 0 0
     position absolute
     top 0
@@ -304,7 +396,7 @@ export default {
     background #f8fafd
     width 75%
     height 75%
-    border-radius 50%
+    border-radius border-half
     content ''
     margin auto
     position absolute

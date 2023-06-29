@@ -1,6 +1,6 @@
 <template>
   <div class="change-password">
-    <h2 class="change-password__title form__title">Новый пароль</h2>
+    <h2 class="change-password__title form__title">{{ translations.setNewPasswordTitle }}</h2>
 
     <form class="change-password__form" @submit.prevent="submitHandler">
       <password-field
@@ -24,7 +24,7 @@
       />
 
       <div class="change-password__action">
-        <button-hover tag="button" type="submit" variant="white">Отправить</button-hover>
+        <button type="submit" class="form-layout__btn btn__fargot">{{ translations.recoveryPassBtn }}</button>
       </div>
     </form>
   </div>
@@ -35,6 +35,7 @@ import { required, sameAs, minLength } from 'vuelidate/lib/validators';
 import PasswordField from '@/components/FormElements/PasswordField';
 import PasswordRepeatField from '@/components/FormElements/PasswordRepeatField';
 import { mapActions } from 'vuex';
+import translations from '@/utils/lang.js';
 export default {
   name: 'ChangePassword',
   components: {
@@ -47,6 +48,17 @@ export default {
     passwordTwo: '',
     secret: '',
   }),
+
+  computed: {
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+  },
 
   mounted() {
     this.secret = this.$route.params.secret || '';
@@ -86,9 +98,13 @@ export default {
   flex-direction column
   height 100%
 
+.change-password .form__group+.form__group
+  margin-top 20px
+
 .change-password__title
   margin-bottom 50px
+  color #fff
 
 .change-password__action
-  margin-top 50px
+  margin-top 30px
 </style>

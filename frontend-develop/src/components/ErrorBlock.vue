@@ -19,11 +19,11 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../assets/stylus/base/vars.styl'
 .error
-  padding 50px
   font-size 20px
   &__title
-    font-weight bold
+    font-weight font-weight-bold
   &__message
-    color #FF5573
+    color ui-cl-color-wild-watermelon
 </style>
