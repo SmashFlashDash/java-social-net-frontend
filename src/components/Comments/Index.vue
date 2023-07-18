@@ -63,7 +63,9 @@ export default {
       this.commentEdit = true;
       this.commentText = commentText;
       this.commentEditInfo = commentInfo;
-      this.$refs.addComment.$refs.addInput.focus();
+      if (this.$refs.addComment && this.$refs.addComment.$refs.addInput) {
+        this.$refs.addComment.$refs.addInput.focus();
+      }
     },
     onSubmitComment() {
       this.commentActions({
@@ -78,12 +80,12 @@ export default {
       });
     },
     computed() {
-      this.info.subComments = this.info.subСomments ? this.info.subComments : [];
+      this.info.subComments = this.info.subComments ? this.info.subComments : [];
     },
     async showMore() {
-      await this.commentsById({ postId: this.info.id, currentPage: this.info.comments.page });
+      await this.$store.dispatch('commentsById', { postId: this.info.id, currentPage: this.info.comments.page });
       this.$forceUpdate();
-    },
+    }
   },
 };
 </script>

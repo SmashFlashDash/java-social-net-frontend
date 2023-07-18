@@ -73,27 +73,21 @@ export default {
   },
 
   actions: {
-    async commentsById(
-      { commit, dispatch, getters },
-      { postId, currentPage = null, commentId = null }
-    ) {
+    async commentsById({ commit, dispatch, getters }, { postId, currentPage = null, commentId = null }) {
       const response = await comments.get(postId, currentPage, commentId);
 
       const { content, totalPages, totalElements } = response.data;
       const page = response.data.number;
 
-      const currentComments = await content.reduce(async (acc, comment) => {
-        const accumulator = await acc;
+      const currentComments = [];
+      for (const comment of content) {
         const author = await getAuthor(comment.authorId, getters.authors, dispatch);
-
-        comment = {
+        currentComments.push({
           ...comment,
           author,
-        };
+        });
+      }
 
-        accumulator.push(comment);
-        return accumulator;
-      }, []);
       const data = {
         postId,
         value: currentComments,
@@ -103,8 +97,11 @@ export default {
         commentId,
       };
 
-      if (commentId) commit('addSubComments', data);
-      else commit('addComments', data);
+      if (commentId) {
+        commit('addSubComments', data);
+      } else {
+        commit('addComments', data);
+      }
     },
 
     async newComment({ dispatch, commit }, payload) {
