@@ -51,7 +51,7 @@ export default {
     pollingToken({ commit, dispatch }) {
       const interval = setInterval(() => {
         dispatch("refreshToken");
-      }, 1000 * 600 * 1.5);
+      }, 1000 * 60 * 15);
       commit("setPollingInterval", interval);
     },
 
@@ -66,9 +66,8 @@ export default {
 
       try {
         const response = await auth.refreshToken(refreshToken);
-        // response.data
-        const newAccessToken = response.accessToken;
-        const newRefreshToken = response.refreshToken;
+        const newAccessToken = response.data.accessToken;
+        const newRefreshToken = response.data.refreshToken;
 
         localStorage.setItem('user-token', newAccessToken);
         localStorage.setItem('refresh-token', newRefreshToken);
@@ -76,8 +75,8 @@ export default {
         document.cookie = `jwt=${newAccessToken}`;
         requestSettings.setDefaultHeader('Authorization', `Bearer ${newAccessToken}`);
         commit('resetAttempts');
-      } catch {
-        console.warn('Cannot get new access token', state.refreshAttempts);
+      } catch (error) {
+        console.warn('Cannot get new access token', state.refreshAttempts, error);
         commit('addAttempts');
       }
     },
