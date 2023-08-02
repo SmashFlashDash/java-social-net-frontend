@@ -24,6 +24,10 @@ export default {
           return 'празднует день рождение';
         case 'MESSAGE':
           return 'прислал сообщение';
+        case 'LIKE':
+          return 'оценил запись';
+        case 'SEND_EMAIL_MESSAGE':
+          return 'отправил email сообщение';
       }
     },
   },
