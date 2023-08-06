@@ -20,7 +20,9 @@
                   {{ info?.data?.author?.firstName + ' ' + info?.data?.author?.lastName }}
                 </span>
                 {{ getNotificationsTextType(info?.data?.notificationType) }}
-                «{{ info?.data?.content }}»
+                    <div>
+                      «{{ info?.data?.content }}»
+                    </div>
               </router-link>
               <span class="push__time">{{ info.data.sentTime | moment('from') }}</span>
             </p>

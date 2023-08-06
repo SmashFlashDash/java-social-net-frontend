@@ -12,6 +12,14 @@ const token = localStorage.getItem('user-token');
 if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 // console.log(jwtDecode(token));
 
+axios.interceptors.request.use(function (config) {
+   const lang = localStorage.getItem('selectedLanguage');
+   config.headers['X-LANG'] = lang ? JSON.parse(lang).desc : 'RU';
+   return config;
+}, function (error) {
+   return Promise.reject(error);
+});
+
 axios.interceptors.response.use(null, (error) => {
   console.error(error.response.status);
   const errorMessage = error.response.data.error_description || '';
