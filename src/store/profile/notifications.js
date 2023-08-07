@@ -11,24 +11,31 @@ export default {
     getNotifications: (s) => s.notifications,
     getNotificationsLength: (s) => s.notificationsLength,
     getNotificationsTextType: () => (type) => {
-      switch (type) {
-        case 'POST':
-          return 'опубликовал новую запись';
-        case 'POST_COMMENT':
-          return 'оставил комментарий';
-        case 'COMMENT_COMMENT':
-          return 'ответил на ваш комментарий';
-        case 'FRIEND_REQUEST':
-          return 'от пользователя';
-        case 'FRIEND_BIRTHDAY':
-          return 'празднует день рождение';
-        case 'MESSAGE':
-          return 'прислал сообщение';
-        case 'LIKE':
-          return 'оценил запись';
-        case 'SEND_EMAIL_MESSAGE':
-          return 'отправил email сообщение';
-      }
+    const lang = localStorage.getItem('selectedLanguage');
+    const locale = lang ? JSON.parse(lang).desc : 'RU';
+      const notificationTypes = {
+        'RU': {
+          'POST': 'опубликовал новую запись',
+          'POST_COMMENT': 'оставил комментарий',
+          'COMMENT_COMMENT': 'ответил на ваш комментарий',
+          'FRIEND_REQUEST': 'от пользователя',
+          'FRIEND_BIRTHDAY': 'празднует день рождение',
+          'MESSAGE': 'прислал сообщение',
+          'LIKE': 'оценил запись',
+          'SEND_EMAIL_MESSAGE': 'отправил email сообщение'
+        },
+        'EN': {
+          'POST': 'posted a new post',
+          'POST_COMMENT': 'left a comment',
+          'COMMENT_COMMENT': 'replied to your comment',
+          'FRIEND_REQUEST': 'sent a friend request',
+          'FRIEND_BIRTHDAY': 'is celebrating a birthday',
+          'MESSAGE': 'sent a message',
+          'LIKE': 'liked a post',
+          'SEND_EMAIL_MESSAGE': 'sent an email message'
+        }
+      };
+      return notificationTypes[locale][type];
     },
   },
   mutations: {
