@@ -165,15 +165,15 @@ export default {
     },
   },
 
-  watch: {
-    dialogs(value) {
-      let unreadCount = 0;
-      value.forEach((item) => {
-        unreadCount += item.unreadCount;
-      });
-      this.setUnreadedMessages(unreadCount);
-    },
-  },
+  // watch: {
+  //   dialogs(value) {
+  //     let unreadCount = 0;
+  //     value.forEach((item) => {
+  //       unreadCount += item.unreadCount;
+  //     });
+  //     this.setUnreadedMessages(unreadCount);
+  //   },
+  // },
 
   created() {
     if (this.$route.name !== 'Im' && this.$route.name !== 'ImChat') this.fetchDialogs();
