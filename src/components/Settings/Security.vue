@@ -29,10 +29,18 @@
       <input
         class="settings-security__value"
         type="password"
-        v-model="passwordTwo"
+        v-model="password1"
         :placeholder="translations.settingPasswordPlaceholder2"
         autocomplete="new-password"
       />
+      <input
+        class="settings-security__value"
+        type="password"
+        v-model="password2"
+        :placeholder="translations.settingPasswordPlaceholder2"
+        autocomplete="new-password"
+      />
+
       <button
         class="settings-security__btn"
         @click.prevent="openModal('password')"
@@ -66,7 +74,7 @@ export default {
     modalText: '',
     changeEmail: '',
     password: '',
-    passwordTwo: '',
+    password1: '',
   }),
 
   computed: {
@@ -86,7 +94,8 @@ export default {
     setTimeout(() => {
       this.changeEmail = this.getInfo?.email;
       this.password = '';
-      this.passwordTwo = '';
+      this.password1 = '';
+      this.password2 = '';
     }, 300);
   },
 
@@ -102,20 +111,22 @@ export default {
         await auth.requestChangeEmailLink({ email: this.changeEmail }).then(() => {
           this.modalText = `${this.translations.settingModalEmailChange} ${this.changeEmail}`;
           this.modalShow = true;
-          setTimeout(() => {
-            this.logout().finally(() => {
-              this.$router.push('/login');
-            });
-          }, 3000);
         });
       }
 
       if (id === 'password') {
-        if (this.password === this.passwordTwo) {
-          await auth.requestChangePasswordLink({ password: this.passwordTwo }).then(() => {
-            this.modalText = `${this.translations.settingModalPasswordChange}`;
-            this.modalShow = true;
+        if (this.password1 === this.password2) {
+          await auth.requestChangePasswordLink({ passwordOld: this.password, passwordNew: this.password1 }).then((response) => {
+            if (response.status === 200) {
+              this.modalText = `${this.translations.settingModalPasswordChange}`;
+              this.modalShow = true;
+            }
           });
+        } else {
+          this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Новые пароли не совпадает',
+        });
         }
       }
     },
