@@ -458,7 +458,8 @@ export default {
     async submitHandler() {
       let _birthDate = 'none';
         if (this.year && this.month && this.day) {
-          _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
+          let date = new Date(this.year, this.month.val, this.day)
+          _birthDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
         }
 
         if (!this.$refs.firstName.validate() && !this.$refs.lastName.validate()) {
