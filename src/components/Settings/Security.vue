@@ -111,6 +111,11 @@ export default {
         await auth.requestChangeEmailLink({ email: this.changeEmail }).then(() => {
           this.modalText = `${this.translations.settingModalEmailChange} ${this.changeEmail}`;
           this.modalShow = true;
+          setTimeout(() => {
+            this.logout().finally(() => {
+              this.$router.push('/login');
+            });
+          }, 3000);
         });
       }
 
